@@ -1,10 +1,15 @@
 <template>
   <el-table
       ref="multipleTable"
-      :data="tableData"
+      :data="maintabledata"
       tooltip-effect="dark"
       style="width: 100%"
-      @selection-change="handleSelectionChange">
+      @selection-change="handleSelectionChange"
+      border
+      width="400px"
+      height="500px"
+      :header-cell-style="getRowClass"
+  >
     <el-table-column
         type="selection"
         width="55">
@@ -12,23 +17,48 @@
     <el-table-column
         prop=""
         label="序号"
-        width="120"
+        width="50px"
         >
+      <template slot-scope="scope">
+        {{scope.row.index}}
+      </template>
     </el-table-column>
     <el-table-column
-        prop="name"
+        prop="jlxxqmc"
         label="小区名称"
-        width="120">
+        width="160px">
     </el-table-column>
     <el-table-column
-        prop="address"
+        prop=""
         label="小区类型"
-        show-overflow-tooltip>
+        width="100px">
+      <template slot-scope="scope">
+        {{scope.row.xqlx | xqlxtype }}
+      </template>
     </el-table-column>
     <el-table-column
-        prop="address"
-        label="小区类型"
-        show-overflow-tooltip>
+        prop="dzmc"
+        label="详细地址"
+        width="150px">
+    </el-table-column>
+
+    <el-table-column
+        prop="hyrHysj"
+        label="核验时间"
+        width="150px">
+    </el-table-column>
+    <el-table-column
+        prop="hyzt"
+        label="核验结果"
+        width="150px">
+      <template slot-scope="scope">
+        {{scope.row.hyzt | hyzttype }}
+      </template>
+    </el-table-column>
+    <el-table-column
+        label="操作区"
+       >
+      <a>详情</a>
     </el-table-column>
   </el-table>
 <!--  <div style="margin-top: 20px">
@@ -42,11 +72,13 @@ import {GetMainTableninfo} from "../http/api";
 
 export default {
   name: "MainTable",
+  props: {
+    maintabledata: Array
+  },
   data () {
     return {
-      tableData : [],
+      tableData : this.maintabledata,
       multipleSelection: [],
-
     }
   },
   created() {
@@ -58,8 +90,23 @@ export default {
   methods: {
     handleSelectionChange(val){
       console.log(val)
+    },
+    getRowClass({ rowIndex }){
+      if (rowIndex == 0) {
+        return 'background:RGB(0,178,191);color: white'
+      } else {
+        return ''
+      }
     }
 
+  },
+  filters: {
+    xqlxtype(val){
+      return val == 1 ? '单位' : val == 4 ? '楼宇' : val ==2 ? '开放式社区' : val == 5 ? '农村' : val == 3 ? '封闭式小区商业': '其他'
+    },
+    hyzttype(val){
+      return val == 1 ? '已核验':'未核验'
+    }
   }
 }
 </script>
@@ -80,5 +127,8 @@ export default {
 }
 .el-table__header-wrapper{
   background: #2c3e50;
+}
+.el-table-column{
+  text-align: center;
 }
 </style>

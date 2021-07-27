@@ -26,8 +26,6 @@ export default {
         isLeaf: 'leaf'      // 指定节点是否为叶子节点，仅在指定了 lazy 属性的情况下生效
       },
       RootNode: { id: "", label: "全部"},
-      parentList: [],
-      searchData: []
     }
   },
   mounted() {
@@ -63,25 +61,10 @@ export default {
             console.log(err)
           })
     },
-    handleCheckChange(item,e) {          // 节点被点击时的回调
-      console.log(e)
-      console.log(item)
-      console.log(this.getSimpleCheckedNodes(e),'aa')
-      console.log(this.parentList)
-    },
-    getSimpleCheckedNodes(e) {
-      let res = '';
-        if (e.parent.data.id!=""){
-          this.getSimpleCheckedNodes(e.parent)
-        }
-        else{
-          if (e.data.level === 'sj')
-            res =  {sssj :e.data.id}
-          this.parentList.push(res)
-        }
-      }
-
-    },
+    handleCheckChange(item,e) {
+      this.$emit("handleChechange",e);
+    }
+  }
 }
 </script >
 

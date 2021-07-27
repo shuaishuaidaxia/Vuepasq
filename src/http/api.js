@@ -15,7 +15,7 @@ export function GetMainTableninfo (parameter) {
   return request({
     url: userApi.getMainTable,
     method: 'post',
-    params: parameter,
+    data: parameter,
     headers: {'content-type': 'application/json'},
   })
 }

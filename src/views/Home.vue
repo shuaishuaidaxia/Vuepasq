@@ -3,7 +3,9 @@
   <div class="box" id="app">
   <el-container style="height: 100%">
     <el-aside width="200px"  >
-      <TreeNav></TreeNav>
+      <TreeNav @handleChechange="handleChechange">
+
+      </TreeNav>
     </el-aside>
     <el-container>
       <el-header>
@@ -14,12 +16,14 @@
             @zhreceive = "zhselected"
             :xqlx-curriculums="xqlxselectdata"
             @xqlxreceive="xqlxselectcd"
-            :inputval="inputdata"
+            :inputval="keyword"
             @xqmzreceive="inputchange"
         ></Topcomponet>
       </el-header>
       <el-main>
-        <MainTable></MainTable>
+        <MainTable
+        :maintabledata="Tabledata">
+        </MainTable>
       </el-main>
     </el-container>
   </el-container>
@@ -31,6 +35,7 @@
 import TreeNav from "../components/Tree-nav";
 import Topcomponet from "../components/Topcomponet";
 import MainTable from "../components/MainTable";
+import {GetMainTableninfo} from "../http/api";
 export default {
   name: 'Home',
   components: {
@@ -43,7 +48,15 @@ export default {
       selectCurriculums:'', //警务网格下拉框
       zhselectdata: '',  //智慧小区下拉框
       xqlxselectdata: '', //小区类型下拉框
-      inputdata: '' //input输入框
+      keyword: '', //input输入框
+      sssj: '',
+      ssfxj: '',
+      sspcs: '',
+      wgdm: '',
+      xqxxbz: '',
+      pageSize: 10,
+      pageIndex: 1,
+      Tabledata: [] //表格数据
     }
   },
   watch: {
@@ -55,6 +68,12 @@ export default {
     }
   },
   computed: {
+    parameter(){
+      return {
+        sssj: this.sssj,ssfxj: this.ssfxj,sspcs: this.sspcs,wgdw: this.wgdm,pageInfo:{pageSize:this.pageSize,pageIndex:this.pageIndex},
+          keyword: this.keyword,xqxxbz: this.xqxxbz,isRelationGrid: this.selectCurriculums,xqxzdm: this.zhselectdata,xqlx: this.xqlxselectdata
+      }
+    }
   },
   methods: {
     Rgselected(value){
@@ -68,14 +87,63 @@ export default {
       this.zhselectdata = value
     },
     xqlxselectcd(value) {
+      //小区类型
       console.log(value)
       this.xqlxselectdata = value
     },
     inputchange(value){
+      //小区名称查询
       console.log(value)
-      this.xqlxselectdata = value
-    }
+      this.keyword = value
+    },
+    handleChechange(e){
+      //Tree选择点击事件
+      this.getSimpleCheckedNodes(e)
+      console.log(this.sssj,this.ssfxj,this.sspcs,this.wgdm,'aa')
+      this.GetXQ()
+    },
+    getSimpleCheckedNodes(e) {
+      this.cleanparentinfo()
+      if (e.parent.data.id ===""){
+        this.sssj = e.data.id
+      }
+      else{
+        this.getSimpleCheckedNodes(e.parent)
+        {
+          if(e.data.level === 'fxj'){
+            this.ssfxj =   e.data.id
+          }
+          if (e.data.level === 'pcs')
+          {
+            this.sspcs =   e.data.id
+          }
+          if (e.data.level === 'zrq')
+          {
+            this.wgdm =  e.data.id
+          }
 
+        }
+      }
+    },
+    cleanparentinfo(){
+      this.sssj = ''
+      this.ssfxj = ''
+      this.sspcs = ''
+      this.wgdm = ''
+    },
+    GetXQ()
+    {
+      console.log(this.parameter,'请求头')
+      GetMainTableninfo(this.parameter)
+      .then(res =>{
+        this.Tabledata = res.data.dataList
+        console.log(this.Tabledata,'分页请求')
+      })
+      .catch(err =>{
+        console.log(err,'分页请求')
+      })
+
+    }
   }
 }
 </script>
