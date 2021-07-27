@@ -1,6 +1,7 @@
 import request from './request'
 const userApi = {
-  getTreeinfo: '/module/kg/hierarchyTree/getPublicSecurityTreeChildrenList'
+  getTreeinfo: '/module/kg/hierarchyTree/getPublicSecurityTreeChildrenList',
+  getMainTable: '/module/kg/xqjbxx/getXQ'
 }
 export function GetTreeInfo (parameter) {
   return request({
@@ -8,5 +9,13 @@ export function GetTreeInfo (parameter) {
     method: 'get',
     params: parameter,
     headers: { 'content-type': 'application/json' },
+  })
+}
+export function GetMainTableninfo (parameter) {
+  return request({
+    url: userApi.getMainTable,
+    method: 'post',
+    params: parameter,
+    headers: {'content-type': 'application/json'},
   })
 }
