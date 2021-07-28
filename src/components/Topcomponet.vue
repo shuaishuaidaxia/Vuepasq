@@ -37,10 +37,10 @@
       </el-select
       ></div>
     <div class="inlinback">
-      <el-input v-model="inputdata" placeholder="请输入小区名字或地址" @input="inputvalchange"></el-input>
+      <el-input v-model="inputdata" placeholder="请输入小区名字或地址" ></el-input>
     </div>
     <div class="inlinback">
-      <el-button type="primary">搜索</el-button>
+      <el-button type="primary" @click="SearchBut">搜索</el-button>
     </div>
     <div rbinlibock>
       <el-button type="primary">新增</el-button>
@@ -56,14 +56,13 @@ export default {
     selectCurriculums: '',
     zhCurriculums: '',
     xqlxCurriculums: '',
-    inputval: ''
   },
   data () {
     return {
+      inputdata:'',
       isRelationGrid:this.selectCurriculums,
       zhCurrdata: this.zhCurriculums,
       xqlxCurrdata: this.xqlxCurriculums,
-      inputdata: this.inputval,
       curriculums: [{title: '全部',value: ''},{title: '关联',value: 1},{title: '未关联',value: 0}],
       xqxzdmdata: [{title: '智慧',value: 1},{title: '非智慧',value: 0}],
       xqlxsetectdata: [{title: '单位',value: 1},{title: '楼宇',value: 4},{title: '开放式社区',value: 2},{title: '农村',value: 5},{title: '其他',value: 99},{title: '封闭式小区商业',value: 3}]
@@ -92,9 +91,8 @@ export default {
       //小区类型下拉框
       this.$emit("xqlxreceive", this.xqlxCurrdata);
     },
-    inputvalchange(){
-      //小区查询输入框
-      this.$emit("xqmzreceive", this.inputdata);
+    SearchBut() {
+      this.$emit('SearchBut',this.inputdata)
     }
   }
 }

@@ -4,7 +4,6 @@
   <el-container style="height: 100%">
     <el-aside width="200px"  >
       <TreeNav @handleChechange="handleChechange">
-
       </TreeNav>
     </el-aside>
     <el-container>
@@ -18,6 +17,7 @@
             @xqlxreceive="xqlxselectcd"
             :inputval="keyword"
             @xqmzreceive="inputchange"
+            @SearchBut="SearchBut"
         ></Topcomponet>
       </el-header>
       <el-main>
@@ -25,7 +25,8 @@
         :maintabledata="Tabledata"
         :pagetotal="pagetotal"
         @handlcurrent="handlcurrent"
-        :loading="loading">
+        :loading="loading"
+        :currentpage="pageIndex">
         </MainTable>
       </el-main>
     </el-container>
@@ -84,22 +85,31 @@ export default {
     Rgselected(value){
       //警务网格
       this.selectCurriculums = value
+      this.GetXQ()
       console.log(this.selectCurriculums,'传值过来')
     },
     zhselected(value) {
       console.log(value)
       //智慧小区
       this.zhselectdata = value
+      this.GetXQ()
     },
     xqlxselectcd(value) {
       //小区类型
       console.log(value)
       this.xqlxselectdata = value
+      this.GetXQ()
     },
     inputchange(value){
       //小区名称查询
       console.log(value)
       this.keyword = value
+    },
+    SearchBut(value){
+      //搜索小区名称
+      console.log('点击搜索',value)
+      this.keyword = value
+      this.GetXQ()
     },
     handleChechange(e){
       //Tree选择点击事件
@@ -152,6 +162,7 @@ export default {
         .then(res => {
           this.Tabledata = res.data.dataList
           this.pagetotal = res.data.totalCount
+          this. pageIndex = res.data.pageIndex
           this.handlchangeloding()
           console.log(this.Tabledata, '分页请求')
         })
@@ -187,7 +198,7 @@ export default {
   background-color: #E9EEF3;
   color: #333;
   text-align: center;
-  line-height: 160px;
+  line-height: 0px;
   height: 100%;
 }
 .el-container{
@@ -221,4 +232,9 @@ body {
   background-color: #2c3e50;
   color: black;
 }
+.el-dialog__title{
+  float: left;
+  color: white !important;
+}
+
 </style>

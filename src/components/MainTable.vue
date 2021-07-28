@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="mytable">
   <el-table
       v-loading="loading"
       ref="multipleTable"
@@ -9,32 +9,29 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
       border
-      width="400px"
-      height="600px"
       :header-cell-style="getRowClass"
+      :cell-style="{ textAlign: 'center' }"
   >
     <el-table-column
         type="selection"
-        width="55">
+       >
     </el-table-column>
     <el-table-column
-        prop=""
+        type="index"
         label="序号"
-        width="50px"
+        width="80px"
         >
-      <template slot-scope="scope">
-        {{scope.row.index}}
-      </template>
     </el-table-column>
     <el-table-column
         prop="jlxxqmc"
         label="小区名称"
-        width="160px">
+        show-overflow-tooltip
+        >
     </el-table-column>
     <el-table-column
         prop=""
         label="小区类型"
-        width="100px">
+      >
       <template slot-scope="scope">
         {{scope.row.xqlx | xqlxtype }}
       </template>
@@ -42,57 +39,74 @@
     <el-table-column
         prop="dzmc"
         label="详细地址"
-        width="150px">
+        show-overflow-tooltip>
     </el-table-column>
 
     <el-table-column
         prop="hyrHysj"
         label="核验时间"
-        width="150px">
+    >
     </el-table-column>
     <el-table-column
         prop="hyzt"
         label="核验结果"
-        width="150px">
+     >
       <template slot-scope="scope">
         {{scope.row.hyzt | hyzttype }}
       </template>
     </el-table-column>
     <el-table-column
         label="操作区"
+        min-width="400px"
        >
-      <a>详情</a>
+      <template slot-scope="scope">
+        <el-button  type="text" @click="handleClick(scope.row)">详情</el-button>
+        <el-button  type="text">修改</el-button>
+        <el-button  type="text" :disabled="scope.row.hyzt == 1 ? true : false">核验</el-button>
+        <el-button  type="text">删除</el-button>
+        <el-button  type="text">物业</el-button>
+      </template>
     </el-table-column>
   </el-table>
-    </div>
+
   <div class="block">
     <el-pagination
-        layout="prev, pager, next,jumper"
+        layout="total,prev, pager, next,jumper"
         :total=this.pagetotal
         @current-change="tablechange"
-        @prev-click="prevclick"
         :current-page="currentpage"
         >
     </el-pagination>
   </div>
+    </div>
+    <TableDialog
+        :dialogFormVisible="dialogFormVisible"
+        :disabled="disabled"
+        @danlchangestate="danlchangestate"
+    >
+    </TableDialog>
   </div>
 </template>
 
 <script>
 import {GetMainTableninfo} from "../http/api";
+import TableDialog from "./TableDialog";
 
 export default {
   name: "MainTable",
+  components: {TableDialog},
   props: {
     maintabledata: Array,
     pagetotal: Number,
-    currentpage: 1,
+    currentpage: Number,
     loading: false
   },
   data () {
     return {
       tableData : this.maintabledata,
       multipleSelection: [],
+      dialogFormVisible: false,
+      disabled: false
     }
   },
   created() {
@@ -103,7 +117,7 @@ export default {
     },
     getRowClass({ rowIndex }){
       if (rowIndex == 0) {
-        return 'background:RGB(0,178,191);color: white'
+        return 'background:RGB(0,178,191);color: white;textAlign:center'
       } else {
         return ''
       }
@@ -115,8 +129,14 @@ export default {
       console.log('页码改变')
       console.log(pageIndex,'页码')
     },
-    prevclick(){
-      console.log('点击了下一页')
+    handleClick(value){
+      //详情按钮
+      console.log(value,'详情按钮')
+      this.danlchangestate()
+    },
+    danlchangestate(){
+      //改变对话框的可见状态
+      this.dialogFormVisible =! this.dialogFormVisible
     }
   },
   filters: {
@@ -131,18 +151,15 @@ export default {
 </script>
 
 <style>
-.el-table__header tr,
-.el-table__header th {
-  padding: 0;
-  height: 20px;
-}
 .el-table__body tr,
 .el-table__body td {
   padding: 0;
   height: 20px;
 }
-.el-table td, .el-table th{
+.el-table td,
+.el-table th{
   line-height: 2px;
+  text-align: center;
 }
 .el-table__header-wrapper{
   background: #2c3e50;
@@ -152,5 +169,10 @@ export default {
 }
 .block{
   float: right;
+  margin-top: 5px;
+}
+.cell{max-height: 30px !important;overflow: hidden !important; }
+.mytable{
+  width: 90%;
 }
 </style>
