@@ -57,7 +57,7 @@
     </el-table-column>
     <el-table-column
         label="操作区"
-        min-width="400px"
+        min-width="200px"
        >
       <template slot-scope="scope">
         <el-button  type="text" @click="handleClick(scope.row)">详情</el-button>
@@ -174,5 +174,6 @@ export default {
 .cell{max-height: 30px !important;overflow: hidden !important; }
 .mytable{
   width: 90%;
+  height: 80%;
 }
 </style>

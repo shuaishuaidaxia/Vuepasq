@@ -160,10 +160,11 @@ export default {
      this.handlchangeloding()
       GetMainTableninfo(this.parameter)
         .then(res => {
+          this.handlchangeloding()
           this.Tabledata = res.data.dataList
           this.pagetotal = res.data.totalCount
           this. pageIndex = res.data.pageIndex
-          this.handlchangeloding()
+
           console.log(this.Tabledata, '分页请求')
         })
             .catch(err => {
