@@ -22,7 +22,10 @@
       </el-header>
       <el-main>
         <MainTable
-        :maintabledata="Tabledata">
+        :maintabledata="Tabledata"
+        :pagetotal="pagetotal"
+        @handlcurrent="handlcurrent"
+        :loading="loading">
         </MainTable>
       </el-main>
     </el-container>
@@ -45,6 +48,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       selectCurriculums:'', //警务网格下拉框
       zhselectdata: '',  //智慧小区下拉框
       xqlxselectdata: '', //小区类型下拉框
@@ -56,7 +60,8 @@ export default {
       xqxxbz: '',
       pageSize: 10,
       pageIndex: 1,
-      Tabledata: [] //表格数据
+      Tabledata: [], //表格数据
+      pagetotal: 0
     }
   },
   watch: {
@@ -104,26 +109,34 @@ export default {
     },
     getSimpleCheckedNodes(e) {
       this.cleanparentinfo()
-      if (e.parent.data.id ===""){
-        this.sssj = e.data.id
-      }
-      else{
-        this.getSimpleCheckedNodes(e.parent)
-        {
-          if(e.data.level === 'fxj'){
-            this.ssfxj =   e.data.id
-          }
-          if (e.data.level === 'pcs')
-          {
-            this.sspcs =   e.data.id
-          }
-          if (e.data.level === 'zrq')
-          {
-            this.wgdm =  e.data.id
-          }
 
+      if (e.data.id != '')
+      {
+        if (e.parent.data.id == ''){
+          this.sssj = e.data.id
+        }
+        else{
+          this.getSimpleCheckedNodes(e.parent)
+          {
+            if(e.data.level === 'fxj'){
+              this.ssfxj =   e.data.id
+            }
+            if (e.data.level === 'pcs')
+            {
+              this.sspcs =   e.data.id
+            }
+            if (e.data.level === 'zrq')
+            {
+              this.wgdm =  e.data.id
+            }
+
+          }
         }
       }
+
+    },
+    handlchangeloding(){
+      this.loading = ! this.loading
     },
     cleanparentinfo(){
       this.sssj = ''
@@ -134,15 +147,23 @@ export default {
     GetXQ()
     {
       console.log(this.parameter,'请求头')
+     this.handlchangeloding()
       GetMainTableninfo(this.parameter)
-      .then(res =>{
-        this.Tabledata = res.data.dataList
-        console.log(this.Tabledata,'分页请求')
-      })
-      .catch(err =>{
-        console.log(err,'分页请求')
-      })
-
+        .then(res => {
+          this.Tabledata = res.data.dataList
+          this.pagetotal = res.data.totalCount
+          this.handlchangeloding()
+          console.log(this.Tabledata, '分页请求')
+        })
+            .catch(err => {
+              console.log(err, '分页请求')
+            })
+    },
+    handlcurrent(pageindex){
+      //改变表格页码
+      console.log('aaaaaaaa')
+      this.pageIndex = pageindex
+      this.GetXQ()
     }
   }
 }

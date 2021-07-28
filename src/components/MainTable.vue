@@ -1,5 +1,8 @@
 <template>
+  <div>
+    <div>
   <el-table
+      v-loading="loading"
       ref="multipleTable"
       :data="maintabledata"
       tooltip-effect="dark"
@@ -7,7 +10,7 @@
       @selection-change="handleSelectionChange"
       border
       width="400px"
-      height="500px"
+      height="600px"
       :header-cell-style="getRowClass"
   >
     <el-table-column
@@ -61,10 +64,18 @@
       <a>详情</a>
     </el-table-column>
   </el-table>
-<!--  <div style="margin-top: 20px">
-    <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
-    <el-button @click="toggleSelection()">取消选择</el-button>
-  </div>-->
+    </div>
+  <div class="block">
+    <el-pagination
+        layout="prev, pager, next,jumper"
+        :total=this.pagetotal
+        @current-change="tablechange"
+        @prev-click="prevclick"
+        :current-page="currentpage"
+        >
+    </el-pagination>
+  </div>
+  </div>
 </template>
 
 <script>
@@ -73,7 +84,10 @@ import {GetMainTableninfo} from "../http/api";
 export default {
   name: "MainTable",
   props: {
-    maintabledata: Array
+    maintabledata: Array,
+    pagetotal: Number,
+    currentpage: 1,
+    loading: false
   },
   data () {
     return {
@@ -82,10 +96,6 @@ export default {
     }
   },
   created() {
-    const par = {}
-    GetMainTableninfo()
-    .then()
-    .catch()
   },
   methods: {
     handleSelectionChange(val){
@@ -97,8 +107,17 @@ export default {
       } else {
         return ''
       }
+    },
+    tablechange (pageIndex){
+      //分页页码改变
+      this.$emit("handlcurrent",pageIndex);
+      //改变页码
+      console.log('页码改变')
+      console.log(pageIndex,'页码')
+    },
+    prevclick(){
+      console.log('点击了下一页')
     }
-
   },
   filters: {
     xqlxtype(val){
@@ -130,5 +149,8 @@ export default {
 }
 .el-table-column{
   text-align: center;
+}
+.block{
+  float: right;
 }
 </style>
