@@ -42,8 +42,8 @@
     <div class="inlinback">
       <el-button type="primary" @click="SearchBut">搜索</el-button>
     </div>
-    <div rbinlibock>
-      <el-button type="primary">新增</el-button>
+    <div class="rbinlibock">
+      <el-button type="primary" @click="addxq">新增</el-button>
       <el-button type="primary">批量删除</el-button>
     </div>
   </div>
@@ -92,8 +92,14 @@ export default {
       this.$emit("xqlxreceive", this.xqlxCurrdata);
     },
     SearchBut() {
+      //搜索按钮
       this.$emit('SearchBut',this.inputdata)
+    },
+    addxq(){
+      //点击了新增
+      this.$emit("addxq");
     }
+
   }
 }
 </script>

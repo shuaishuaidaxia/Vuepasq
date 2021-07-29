@@ -18,6 +18,7 @@
             :inputval="keyword"
             @xqmzreceive="inputchange"
             @SearchBut="SearchBut"
+            @addxq="addxq"
         ></Topcomponet>
       </el-header>
       <el-main>
@@ -176,6 +177,11 @@ export default {
       console.log('aaaaaaaa')
       this.pageIndex = pageindex
       this.GetXQ()
+    },
+    addxq(){
+      //新增按钮点击
+      console.log('新增按钮被点击',this.addxqstate)
+      this.$store.dispatch('Openmydialong','add')
     }
   }
 }

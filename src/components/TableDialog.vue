@@ -1,21 +1,41 @@
 <template>
 <div>
-  <el-dialog  @close="handlclose" title="基本信息" :visible.sync="dialongstate" width="90%">
+  <el-dialog  @close="handlclose" :title="this.gettitle" :visible.sync="getdialongstate" width="90%">
     <el-collapse accordion>
       <el-collapse-item>
         <template slot="title">
           <i class="header-icon el-icon-user-solid"></i>基本信息
         </template>
         <div class="el-collapse-item__content">
-          <form class="el-form">
+          <el-form class="el-form" ref="form" :model="form" >
 
             <el-row class="row-bg">
-              <!--S 划分地址-->
+            <!--S 划分地址-->
               <div class="el-col el-col-11">
                 <div class="el-form-item is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">区划地址</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select value="" disabled="disabled"  placeholder="请选择区域" class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        value-key="address"
+                        key="value"
+                        popper-class="my-autocomplete"
+                        v-model="qhdzstate"
+                        :fetch-suggestions="qhdzSearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="qhdzhandleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                        class="el-icon-edit el-input__icon"
+                        slot="suffix"
+                        @click="handleIconClick">
+                    </i>
+                      <template slot-scope="{item}">
+                        <div class="qhdz">{{ item.address }}</div>
+                      </template>
+                    </el-autocomplete>
                   </div>
                     </div>
                   </div>
@@ -26,7 +46,26 @@
                 <div class="el-form-item is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">街路巷</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled"  placeholder="请选择街路巷" class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        value-key="label"
+                        popper-class="my-autocomplete"
+                        v-model="jlxstate"
+                        :fetch-suggestions="jlxSearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.label}}</div>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -39,7 +78,26 @@
                   <div class="el-form-item  el-form-item--mini">
                     <label class="el-form-item__label" style="width: 150px;">社区</label>
                     <div class="el-form-item__content " style="margin-left: 150px;">
-                      <el-select  value="" disabled="disabled"  placeholder="请选择社区" class="el-input el-input--mini  el-input--suffix"></el-select>
+                      <el-autocomplete
+                          popper-class="my-autocomplete"
+                          v-model="state"
+                          :fetch-suggestions="querySearch"
+                          placeholder="请输入内容"
+                          :disabled="this.disabled"
+                          @select="handleSelect"
+                          style="width: 100%"
+                          class="el-input--small el-input--suffix"
+                      >
+                        <i
+                            class="el-icon-edit el-input__icon"
+                            slot="suffix"
+                            @click="handleIconClick">
+                        </i>
+                        <template slot-scope="{ item }">
+                          <div class="name">{{ item.value }}</div>
+                          <span class="addr">{{ item.address }}</span>
+                        </template>
+                      </el-autocomplete>
                     </div>
                   </div>
                 </div>
@@ -50,7 +108,7 @@
                   <div class="el-form-item  el-form-item--mini">
                     <label class="el-form-item__label" style="width: 150px;">小区性质</label>
                     <div class="el-form-item__content " style="margin-left: 150px;">
-                      <el-select  value="" disabled="disabled"  placeholder="请选择小区性质" class="el-input el-input--mini  el-input--suffix"></el-select>
+                      <el-select  value="" :disabled="this.disabled"  placeholder="请选择小区性质" class="el-input el-input--mini  el-input--suffix"></el-select>
                     </div>
                   </div>
                 </div>
@@ -63,7 +121,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">门(楼)牌</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -74,25 +132,25 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">门(楼)牌后缀</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled"  placeholder="请选择门(楼)牌后缀" class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-input  value="" :disabled="this.disabled"  placeholder="请选择门(楼)牌后缀" class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
             </div>
             <!--E 门牌后缀-->
 
-            <!--S 门牌-->
+            <!--S 全地址名称-->
             <div class="el-row">
               <div class="el-col el-col-22">
                 <div class="el-form-item  is-required el-form-item--mini">
-                  <label class="el-form-item__label" style="width: 150px;">门(楼)牌</label>
+                  <label class="el-form-item__label" style="width: 150px;">全地址名称</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
             </div>
-            <!--E 门牌-->
+            <!--E 全地址名称-->
 
             <div class="el-row">
               <!--S 小区名称-->
@@ -100,7 +158,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区名称</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -111,7 +169,26 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区类型</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled"  placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -124,7 +201,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区楼栋数量</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -132,10 +209,10 @@
 
               <!--S 建筑物房屋属性-->
               <div class="el-col el-col-11">
-                <div class="el-form-item is-required  el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">建筑物房屋属性</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled"  placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-select    value="" :disabled="this.disabled"  placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
                   </div>
                 </div>
               </div>
@@ -145,10 +222,10 @@
             <!--S 建筑物标签-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">建筑物标签</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -156,10 +233,10 @@
 
               <!--S 物业公司单位名称-->
               <div class="el-col el-col-11">
-                <div class="el-form-item is-required  el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">物业公司单位名称</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled"  placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-select    value="" :disabled="this.disabled"  placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
                   </div>
                 </div>
               </div>
@@ -169,10 +246,10 @@
             <!--S 使用状态代码-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">使用状态代码</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled" placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-select  value="" :disabled="this.disabled" placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
                   </div>
                 </div>
               </div>
@@ -180,10 +257,10 @@
 
               <!--S 物业公司联系人姓名-->
               <div class="el-col el-col-11">
-                <div class="el-form-item is-required  el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">物业公司联系人姓名</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input    value="" disabled="disabled"    class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input    value="" :disabled="this.disabled"    class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -193,10 +270,10 @@
             <!--S 物业公司联系电话-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">物业公司联系电话</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled" class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled" class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -204,10 +281,10 @@
 
               <!--S 小区启用日期-->
               <div class="el-col el-col-11">
-                <div class="el-form-item is-required  ">
+                <div class="el-form-item   ">
                   <label class="el-form-item__label" style="width: 150px;">小区启用日期</label>
                   <div class="el-form-item__content" style="margin-left: 150px;">
-                    <el-date-picker size="large" type="date"   value="" disabled="disabled" placeholder="选择日期"  style="width: 100%"  class=" el-input--small el-input--suffix "></el-date-picker>
+                    <el-date-picker size="large" type="date"   value="" :disabled="this.disabled" placeholder="选择日期"  style="width: 100%"  class=" el-input--small el-input--suffix "></el-date-picker>
                   </div>
                 </div>
               </div>
@@ -217,10 +294,10 @@
             <!--S 小区出入口数量-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区出入口数量</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -228,34 +305,29 @@
 
               <!--S 居村委代码-->
               <div class="el-col el-col-11">
-                <div class="el-form-item is-required  el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">居村委代码</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--E 居村委代码-->
-
-            <!--S 小区出入口数量-->
-            <div class="el-row">
-              <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
-                  <label class="el-form-item__label" style="width: 150px;">小区出入口数量</label>
-                  <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
-                  </div>
-                </div>
-              </div>
-              <!--E 小区出入口数量-->
-
-              <!--S 居村委代码-->
-              <div class="el-col el-col-11">
-                <div class="el-form-item is-required  el-form-item--mini">
-                  <label class="el-form-item__label" style="width: 150px;">居村委代码</label>
-                  <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -265,10 +337,29 @@
             <!--S 乡镇街道-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <div class="el-form-item  is-required el-form-item--mini">
+                <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">乡镇街道</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled" placeholder="请选择街道"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -281,7 +372,26 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">所属市局</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled"    class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -292,7 +402,26 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">所属分局</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -305,7 +434,26 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">所属派出所</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -316,7 +464,26 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">警务网格</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -329,7 +496,26 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">所属责任区</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select  value="" disabled="disabled"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-autocomplete
+                        popper-class="my-autocomplete"
+                        v-model="state"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"
+                        :disabled="this.disabled"
+                        @select="handleSelect"
+                        style="width: 100%"
+                        class="el-input--small el-input--suffix"
+                    >
+                      <i
+                          class="el-icon-edit el-input__icon"
+                          slot="suffix"
+                          @click="handleIconClick">
+                      </i>
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span class="addr">{{ item.address }}</span>
+                      </template>
+                    </el-autocomplete>
                   </div>
                 </div>
               </div>
@@ -340,7 +526,7 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区边界</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-select    value="" disabled="disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-select>
+                      <el-input    value="" :disabled="this.disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -350,9 +536,9 @@
             <!--S 采集照片-->
             <div class="el-row">
               <div class="el-col el-col-22">
-                <div class="el-form-item  is-required el-form-item--mini">
-                  <label class="el-form-item__label" style="width: 150px;">所属责任区</label>
-                  <div class="el-form-item__content " style="margin-left: 150px;">
+                <div class="el-form-item   el-form-item--mini">
+                  <label class="el-form-item__label" style="width: 150px;">采集照片</label>
+                  <div class="el-form-item__label-wrap" style="margin-left: 150px;">
                     <el-upload
                         action="#"
                         list-type="picture-card"
@@ -392,51 +578,98 @@
               </div>
             </div>
               <!--E 采集照片-->
-          </form>
+          </el-form>
         </div>
       </el-collapse-item>
     </el-collapse>
+    <ButGroup
+    :butbc_isdisabled="this.$store.state.butbc_isdisabled"
+    :butcz_isdisabled="this.$store.state.butcz_isdisabled"
+    :butqx_isdisabled="this.$store.state.butqx_isdisabled"
+    >
+    </ButGroup>
   </el-dialog>
 </div>
 </template>
 
 <script>
+import ButGroup from "./ButGroup";
+import {GetMainTableninfo, GetTreeChildren, GetTreeInfo} from "../http/api";
 export default {
   name: "TableDialog",
+  components: {ButGroup},
   props: {
-    dialogFormVisible: Boolean,
-    disabled: Boolean
   },
   data (){
     return {
-      dialongstate: this.dialogFormVisible,
-      formLabelWidth: '120px',
+      formLabelWidth: '100%',
       form:{},
-      restaurants: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      imagedisabled:false
+      imagedisabled:false,
+      state: '',
+      /*autocomplete*/
+      qhdzdata: [],  //区划分
+      qhdzstate: '', //区划分
+      jlxstate: '',  //街路巷
+      jlxdata: [],  //街路巷
+
+      pId: '',
+      max: '',
+      hyzt: 0 ,
+      level: ''
     }
   },
-  watch:{
-    dialogFormVisible(newvalue){
-      this.dialongstate = newvalue
-      console.log(this.dialogFormVisible,'dialog');
+  computed:{
+    getdialongstate:{
+      get(){
+        return this.$store.state.dilongstate
+      },
+      set(){}
+    },
+    disabled:{
+     get(){
+      return  this.$store.state.disabled
+     },
+      set() {
+      }
+    },
+    gettitle(){
+      return this.$store.state.dialogtitle
+    },
+    Treeparameter() {
+      return  {pId : this.pId,max: this.max,hyzt: this.hyzt,level: this.level}
     }
   },
+  created() {
+    console.log(this.disabled,'组件状态')
+  },
+  mounted() {
+    this.qhdzdata = this.qhdzlist()
+    },
   methods: {
     danlchangestate(){
       this.$emit("danlchangestate");
     },
     handleSelect(item){
-      console.log(item)
+      console.log(item,'')
+    },
+    qhdzhandleSelect(item)
+    {
+      console.log(item,'区划地址')
+      this.max = 'fxj'
+      this.pId = item.value
+      this.GetXQTree()
     },
     handleIconClic(){
 
     },
+    querySearch(){},
     handlclose(){
       //右上角的x
-      this.$emit("danlchangestate");
+      console.log('我是右上角的x')
+      this.$store.dispatch('Closemydialog')
+
     },
     handleRemove(file) {
       console.log(file);
@@ -446,11 +679,59 @@ export default {
       this.dialogVisible = true;
     },
     handleDownload(file) {
+      //图片下载点击
       console.log(file);
-    }
-
+    },
+    handleIconClick(ev) {
+      //input图标点击事件
+      console.log(ev);
+    },
+    qhdzSearch(queryString, cb) {
+      let restaurants = this.qhdzdata;
+      let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    jlxSearch(queryString, cb)
+    {
+      let restaurants = this.jlxdata;
+      let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return (restaurant.address.toLowerCase().indexOf(queryString.toLowerCase()) >=0);
+      };
+    },
+    qhdzlist() {
+      return [
+        { "value": "360102","address" : "江西省南昌市东湖区"},
+        { "value": "360103", "address": "江西省南昌市西湖区"},
+        { "value": "360198","address" : "江西省南昌市高新区"},
+        { "value": "360111", "address": "江西省南昌市青山湖"},
+        { "value": "360121","address" : "江西省南昌市南昌县"},
+        { "value": "360199", "address": "江西省南昌市经开区"},
+        { "value": "360192","address" : "江西省南昌市红谷滩区"},
+        { "value": "360124", "address": "江西省南昌市进贤县"},
+        { "value": "360123","address" : "江西省南昌市安义县"},
+        { "value": "360122", "address": "江西省南昌市新建县"},
+        { "value": "360104","address" : "江西省南昌市青云谱"}
+      ]
+    },
+    GetXQTree()
+    {
+      console.log(this.qhdzstate,'去华帝');
+      GetTreeChildren(this.Treeparameter)
+          .then(res => {
+            this.jlxdata = res.data
+            console.log(res, '根据区划地址')
+          })
+          .catch(err => {
+            console.log(err, '分页请求')
+          })
+    },
   }
-
 }
 </script>
 

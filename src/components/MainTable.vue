@@ -80,8 +80,6 @@
   </div>
     </div>
     <TableDialog
-        :dialogFormVisible="dialogFormVisible"
-        :disabled="disabled"
         @danlchangestate="danlchangestate"
     >
     </TableDialog>
@@ -91,23 +89,28 @@
 <script>
 import {GetMainTableninfo} from "../http/api";
 import TableDialog from "./TableDialog";
+import Topcomponet from "./Topcomponet";
 
 export default {
   name: "MainTable",
-  components: {TableDialog},
+  components: {Topcomponet, TableDialog},
   props: {
     maintabledata: Array,
     pagetotal: Number,
     currentpage: Number,
-    loading: false
+    loading: false,
   },
   data () {
     return {
       tableData : this.maintabledata,
       multipleSelection: [],
-      dialogFormVisible: false,
-      disabled: false
+
     }
+  },
+  watch: {
+  },
+  mounted() {
+
   },
   created() {
   },
@@ -131,8 +134,7 @@ export default {
     },
     handleClick(value){
       //详情按钮
-      console.log(value,'详情按钮')
-      this.danlchangestate()
+      this.$store.dispatch('Openmydialong','details')
     },
     danlchangestate(){
       //改变对话框的可见状态
@@ -173,7 +175,7 @@ export default {
 }
 .cell{max-height: 30px !important;overflow: hidden !important; }
 .mytable{
-  width: 90%;
+  width: 100%;
   height: 80%;
 }
 </style>
