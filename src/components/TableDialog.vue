@@ -16,7 +16,7 @@
                   <label class="el-form-item__label" style="width: 150px;">区划地址</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
-                        value-key="address"
+                        value-key="label"
                         key="value"
                         popper-class="my-autocomplete"
                         v-model="qhdzstate"
@@ -33,7 +33,7 @@
                         @click="handleIconClick">
                     </i>
                       <template slot-scope="{item}">
-                        <div class="qhdz">{{ item.address }}</div>
+                        <div class="qhdz">{{ item.label }}</div>
                       </template>
                     </el-autocomplete>
                   </div>
@@ -80,8 +80,8 @@
                     <div class="el-form-item__content " style="margin-left: 150px;">
                       <el-autocomplete
                           popper-class="my-autocomplete"
-                          v-model="state"
-                          :fetch-suggestions="querySearch"
+                          v-model="sqstate"
+                          :fetch-suggestions="sqSearch"
                           placeholder="请输入内容"
                           :disabled="this.disabled"
                           @select="handleSelect"
@@ -94,8 +94,7 @@
                             @click="handleIconClick">
                         </i>
                         <template slot-scope="{ item }">
-                          <div class="name">{{ item.value }}</div>
-                          <span class="addr">{{ item.address }}</span>
+                          <div class="name">{{ item.sqmc }}</div>
                         </template>
                       </el-autocomplete>
                     </div>
@@ -594,11 +593,12 @@
 
 <script>
 import ButGroup from "./ButGroup";
-import {GetMainTableninfo, GetTreeChildren, GetTreeInfo} from "../http/api";
+import {GetMainTableninfo, GetSqListByXzq, GetTreeChildren, GetTreeInfo} from "../http/api";
 export default {
   name: "TableDialog",
   components: {ButGroup},
   props: {
+    detailsitem: {}
   },
   data (){
     return {
@@ -613,6 +613,8 @@ export default {
       qhdzstate: '', //区划分
       jlxstate: '',  //街路巷
       jlxdata: [],  //街路巷
+      sqstate: '',  //社区
+      sqdata: [], //社区
 
       pId: '',
       max: '',
@@ -639,14 +641,25 @@ export default {
     },
     Treeparameter() {
       return  {pId : this.pId,max: this.max,hyzt: this.hyzt,level: this.level}
+    },
+    SqlistByXzqparameter(){
+      return {xzq : this.pId}
     }
   },
   created() {
     console.log(this.disabled,'组件状态')
   },
   mounted() {
-    this.qhdzdata = this.qhdzlist()
+    this.max = 'W4'
+    this.pId = '360100'
+    this.Getqudz()
+    console.log(this.detailsitem,'详情');
     },
+  watch : {
+    detailsitem(newvalue){
+      console.log(newvalue,'aada')
+    }
+  },
   methods: {
     danlchangestate(){
       this.$emit("danlchangestate");
@@ -656,10 +669,12 @@ export default {
     },
     qhdzhandleSelect(item)
     {
+      //区划地址选择后
       console.log(item,'区划地址')
       this.max = 'fxj'
-      this.pId = item.value
+      this.pId = item.id
       this.GetXQTree()
+      this.GetSqList()
     },
     handleIconClic(){
 
@@ -699,38 +714,51 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results);
     },
+    sqSearch(queryString, cb)
+    {
+      let restaurants = this.sqdata;
+      let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
     createFilter(queryString) {
       return (restaurant) => {
         return (restaurant.address.toLowerCase().indexOf(queryString.toLowerCase()) >=0);
       };
     },
-    qhdzlist() {
-      return [
-        { "value": "360102","address" : "江西省南昌市东湖区"},
-        { "value": "360103", "address": "江西省南昌市西湖区"},
-        { "value": "360198","address" : "江西省南昌市高新区"},
-        { "value": "360111", "address": "江西省南昌市青山湖"},
-        { "value": "360121","address" : "江西省南昌市南昌县"},
-        { "value": "360199", "address": "江西省南昌市经开区"},
-        { "value": "360192","address" : "江西省南昌市红谷滩区"},
-        { "value": "360124", "address": "江西省南昌市进贤县"},
-        { "value": "360123","address" : "江西省南昌市安义县"},
-        { "value": "360122", "address": "江西省南昌市新建县"},
-        { "value": "360104","address" : "江西省南昌市青云谱"}
-      ]
+    Getqudz(){
+      //区划地址
+      GetTreeChildren(this.Treeparameter)
+      .then( res =>{
+        this.qhdzdata = res.data
+        console.log(res,'mmmm')
+      })
+      .catch(err =>{
+        alert(err)
+      })
     },
     GetXQTree()
     {
-      console.log(this.qhdzstate,'去华帝');
+      ///街角巷
       GetTreeChildren(this.Treeparameter)
           .then(res => {
             this.jlxdata = res.data
-            console.log(res, '根据区划地址')
           })
           .catch(err => {
             console.log(err, '分页请求')
           })
     },
+    GetSqList(){
+      /*根据区地址加载社区*/
+      GetSqListByXzq(this.SqlistByXzqparameter)
+      .then( res =>{
+        this.sqdata = res.data
+        console.log(res,'社区资源')
+      })
+      .catch(err =>{
+        alert(err)
+      })
+    }
   }
 }
 </script>

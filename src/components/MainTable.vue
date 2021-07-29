@@ -81,6 +81,7 @@
     </div>
     <TableDialog
         @danlchangestate="danlchangestate"
+        :detailsitem="detailsitem"
     >
     </TableDialog>
   </div>
@@ -104,7 +105,7 @@ export default {
     return {
       tableData : this.maintabledata,
       multipleSelection: [],
-
+      detailsitem: {}
     }
   },
   watch: {
@@ -135,6 +136,8 @@ export default {
     handleClick(value){
       //详情按钮
       this.$store.dispatch('Openmydialong','details')
+      this.detailsitem = value
+      console.log(value,'详情按钮')
     },
     danlchangestate(){
       //改变对话框的可见状态
