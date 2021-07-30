@@ -26,6 +26,7 @@
                         @select="qhdzhandleSelect"
                         style="width: 100%"
                         class="el-input--small el-input--suffix"
+                        name="qhdz"
                     >
                       <i
                         class="el-icon-edit el-input__icon"
@@ -107,7 +108,15 @@
                   <div class="el-form-item  el-form-item--mini">
                     <label class="el-form-item__label" style="width: 150px;">小区性质</label>
                     <div class="el-form-item__content " style="margin-left: 150px;">
-                      <el-select  value="" :disabled="this.disabled"  placeholder="请选择小区性质" class="el-input el-input--mini  el-input--suffix"></el-select>
+                      <el-select  value="" :disabled="this.disabled" v-model="xqxzstate"  placeholder="请选择小区性质" class="el-input el-input--mini  el-input--suffix">
+                        <el-option
+                            v-for="item in xqxzdmdata"
+                            :key="item.value"
+                            :label="item.title"
+                            :value="item.value"
+                        >
+                        </el-option>
+                      </el-select>
                     </div>
                   </div>
                 </div>
@@ -120,7 +129,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">门(楼)牌</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"  v-model="mlpstate"  class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -131,7 +140,7 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">门(楼)牌后缀</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"  placeholder="请选择门(楼)牌后缀" class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled" v-model="mlphzstate" placeholder="请选择门(楼)牌后缀" class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -144,7 +153,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">全地址名称</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled" v-model="qdzmcstate"  class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -157,7 +166,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区名称</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled"  v-model="xqmcstate" class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -168,28 +177,17 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区类型</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="state"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                        <span class="addr">{{ item.address }}</span>
-                      </template>
-                    </el-autocomplete>
+                  <el-select  value="" :disabled="this.disabled" v-model="xqlxstate"  placeholder="请选择小区类型" class="el-input el-input--mini  el-input--suffix">
+                  <el-option
+                      v-for="item in xqlxsetectdata"
+                      :key="item.value"
+                      :label="item.title"
+                      :value="item.value"
+                  >
+                  </el-option>
+                  </el-select>
                   </div>
-                </div>
+                  </div>
               </div>
             </div>
             <!--E 小区类型-->
@@ -200,7 +198,7 @@
                 <div class="el-form-item  is-required el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区楼栋数量</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled" v-model="xqldslstate"  class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -296,7 +294,7 @@
                 <div class="el-form-item   el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区出入口数量</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                    <el-input  value="" :disabled="this.disabled"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                    <el-input  value="" :disabled="this.disabled" v-model="xqckslstate"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -373,7 +371,7 @@
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
                         popper-class="my-autocomplete"
-                        v-model="state"
+                        v-model="sssjstate"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"
                         :disabled="this.disabled"
@@ -403,7 +401,7 @@
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
                         popper-class="my-autocomplete"
-                        v-model="state"
+                        v-model="ssfsjstate"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"
                         :disabled="this.disabled"
@@ -435,7 +433,7 @@
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
                         popper-class="my-autocomplete"
-                        v-model="state"
+                        v-model="sspcsstate"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"
                         :disabled="this.disabled"
@@ -465,7 +463,7 @@
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
                         popper-class="my-autocomplete"
-                        v-model="state"
+                        v-model="wgdmstate"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"
                         :disabled="this.disabled"
@@ -497,7 +495,7 @@
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
                         popper-class="my-autocomplete"
-                        v-model="state"
+                        v-model="sszrqstate"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"
                         :disabled="this.disabled"
@@ -512,7 +510,6 @@
                       </i>
                       <template slot-scope="{ item }">
                         <div class="name">{{ item.value }}</div>
-                        <span class="addr">{{ item.address }}</span>
                       </template>
                     </el-autocomplete>
                   </div>
@@ -525,7 +522,7 @@
                 <div class="el-form-item is-required  el-form-item--mini">
                   <label class="el-form-item__label" style="width: 150px;">小区边界</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
-                      <el-input    value="" :disabled="this.disabled" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-input>
+                      <el-input    value="" :disabled="this.disabled" v-model="xqbjstate" placeholder="请选择"   class="el-input el-input--mini  el-input--suffix"></el-input>
                   </div>
                 </div>
               </div>
@@ -593,7 +590,7 @@
 
 <script>
 import ButGroup from "./ButGroup";
-import {GetMainTableninfo, GetSqListByXzq, GetTreeChildren, GetTreeInfo} from "../http/api";
+import {GetMainTableninfo, GetSqListByXzq, GetTreeChildren, GetTreeInfo, getXQByXqxxbz, getZrqBypcs} from "../http/api";
 export default {
   name: "TableDialog",
   components: {ButGroup},
@@ -603,7 +600,7 @@ export default {
   data (){
     return {
       formLabelWidth: '100%',
-      form:{},
+      form: {},
       dialogImageUrl: '',
       dialogVisible: false,
       imagedisabled:false,
@@ -615,11 +612,37 @@ export default {
       jlxdata: [],  //街路巷
       sqstate: '',  //社区
       sqdata: [], //社区
+      xqxzdmdata: [{title: '智慧',value: 1},{title: '非智慧',value: 0}],
+      xqlxsetectdata: [{title: '单位',value: 1},{title: '楼宇',value: 4},{title: '开放式社区',value: 2},{title: '农村',value: 5},{title: '其他',value: 99},{title: '封闭式小区商业',value: 3}],
+
+      sssjdata: [],
+      ssfxjdata: [],
+      sspcsdata:[],
+      jwwgdata: [],
 
       pId: '',
       max: '',
       hyzt: 0 ,
-      level: ''
+      level: '',
+      sssj:'',
+      sspcs: '',
+      ssfxj: '',
+
+      xqxxbz: '',
+      xqbjstate: '',
+      sszrqstate: '',
+      wgdmstate: '',
+      sspcsstate: '',
+      ssfsjstate:'',
+      sssjstate: '',
+      xqckslstate: '',
+      xqldslstate: '',
+      xqlxstate: '',
+      xqmcstate: '',
+      qdzmcstate: '',
+      mlphzstate: '',
+      mlpstate: '',
+      xqxzstate: '',
     }
   },
   computed:{
@@ -644,6 +667,9 @@ export default {
     },
     SqlistByXzqparameter(){
       return {xzq : this.pId}
+    },
+    getchecktype(){
+        return this.$store.state.dilongtype
     }
   },
   created() {
@@ -654,10 +680,40 @@ export default {
     this.pId = '360100'
     this.Getqudz()
     console.log(this.detailsitem,'详情');
+    this.GetTreeInfo()
+
     },
   watch : {
     detailsitem(newvalue){
+      this.xqxxbz = newvalue.xqxxbz
+      this.GetXQByXqxxbz()
       console.log(newvalue,'aada')
+    },
+    getchecktype(newvalue){
+     if (newvalue == 'add'){
+       this.cleanmodel()
+     }
+    },
+    ssfxj(newvalue){
+      console.log(newvalue,'gfya');
+      this.pId = newvalue
+      GetTreeInfo(this.Treeparameter)
+      .then(res =>{
+        console.log(res,'wwww')
+        this.sspcsdata = res.data
+      })
+      .catch(err =>{
+        alert(err)
+      })
+    },
+    sspcs(newvalue){
+      if (this.sspcsdata!=null){
+        console.log(newvalue,'pcs')
+        this.sspcsstate = newvalue
+        console.log(this.sspcsdata);
+      }
+
+      this.sspcsstate = this.findssfsj(this.sspcsdata,newvalue).label
     }
   },
   methods: {
@@ -683,8 +739,9 @@ export default {
     handlclose(){
       //右上角的x
       console.log('我是右上角的x')
+      //this.cleanmodel()
+      console.log(this.model)
       this.$store.dispatch('Closemydialog')
-
     },
     handleRemove(file) {
       console.log(file);
@@ -727,7 +784,7 @@ export default {
       };
     },
     Getqudz(){
-      //区划地址
+      //区划地址 区信息
       GetTreeChildren(this.Treeparameter)
       .then( res =>{
         this.qhdzdata = res.data
@@ -736,6 +793,101 @@ export default {
       .catch(err =>{
         alert(err)
       })
+    },
+    cleanmodel(){
+      this.jlxstate = ''
+      this.xqckslstate = ''
+      this.sszrqstate = ''
+      this.xqbjstate = ''
+      this.xqmcstate = ''
+      this.mlpstate = ''
+      this.mlphzstate = ''
+      this.qdzmcstate = ''
+      this.xqxzstate = ''
+      this.xqldslstate = ''
+      this.xqlxstate = ''
+      this.qhdzstate = ''
+      this.sssjstate = ''
+      this.ssfsjstate = ''
+      this.sspcsstate = ''
+      this.wgdmstate= ''
+    },
+    putmodel(data){
+      //表单赋值
+      console.log('赋值888888888888888888888888888')
+      this.jlxstate = data.jlxdm //街路巷
+      this.xqckslstate = data.xqcrkSl  //小区出入口数量
+      this.sszrqstate = data.sszrq  //所属责任区
+      this.xqbjstate = data.xqbj //小区边界
+      this.xqmcstate = data.jlxxqmc  //小区名称
+      this.mlpstate = data.mlph  //门楼牌
+      this.mlphzstate = data.mlphz //门楼牌后缀
+      this.qdzmcstate = data.dzmc  //全地址名称
+      this.xqxzstate = data.xqxzdm == '1' ? '智慧小区': '非智慧小区' //小区性质
+      this.xqldslstate = data.xqldSl //楼栋数量
+      this.xqlxstate = data.xqlx == 1 ? '单位' : data.xqlx == 4 ? '楼宇' : data.xqlx ==2 ? '开放式社区' : data.xqlx == 5 ? '农村' : data.xqlx == 3 ? '封闭式小区商业': '其他'  //小区类型
+      this.qhdzstate = this.finldqxx(this.qhdzdata,data.ssfxj).label  //所属区地址
+      console.log(this.qhdzdata,'8888')
+      this.ssfsjstate = this.findssfsj(this.ssfxjdata,data.ssfxj).label
+
+      /*S 所属派出所*/
+      this.pId = this.ssfxj
+      GetTreeInfo(this.Treeparameter)
+          .then(res =>{
+            this.sspcsdata = res.data
+            this.sspcsstate = this.findssfsj(res.data,data.sspcs).label
+          })
+          .catch(err =>{
+            alert(err)
+          })
+      /*E 所属派出所赋值*/
+
+      /*S 网格代码*/
+      if (data.wgdm!=null){
+        this.pId = this.sspcs
+        this.max = 'W4'
+        console.log(this.pId,'pcspid');
+        getZrqBypcs(this.Treeparameter)
+            .then(res =>{
+              this.jwwgdata = res.data
+              console.log(res.data,'qqqq')
+              console.log(data.wgdm)
+              if (!this.findssfsj(res.data,data.wgdm).label){
+                this.wgdmstate =this.findssfsj(res.data,data.wgdm).label
+              }
+              else
+              {
+                this.wgdmstate =this.findssfsj(res.data,data.wgdm).label
+              }
+
+            })
+            .catch(err =>{
+              alert(err)
+            })
+      }
+      /*E 网格代码*/
+    },
+   finldqxx(data,value){
+      //查找小区
+      let itemvalue = ''
+      data.forEach((item) =>{
+        if (item.id == value.substr(0,value.length-item.id.length))
+        {
+         itemvalue = item
+        }
+      }
+   )
+     return itemvalue
+   },
+    findssfsj(data,value){
+      //查找分县局
+      let find_item = ''
+      data.forEach((item) =>{
+        if (item.id == value){
+          find_item = item
+        }
+      })
+      return find_item
     },
     GetXQTree()
     {
@@ -748,6 +900,27 @@ export default {
             console.log(err, '分页请求')
           })
     },
+    GetTreeInfo(){
+      //获取市局信息
+      this.pId = ''
+      GetTreeInfo(this.Treeparameter)
+      .then( res =>{
+        console.log(res.data[0].label,'是啥');
+        this.sssjstate = res.data[0].label
+        this.pId = res.data[0].id
+        GetTreeInfo(this.Treeparameter)
+        .then(res=>{
+          this.ssfxjdata = res.data
+          console.log(res,'草');
+        })
+        .catch(err =>{
+          console.log(err);
+        })
+      })
+      .catch(err =>{
+
+      })
+    },
     GetSqList(){
       /*根据区地址加载社区*/
       GetSqListByXzq(this.SqlistByXzqparameter)
@@ -758,6 +931,25 @@ export default {
       .catch(err =>{
         alert(err)
       })
+    },
+    GetXQByXqxxbz(){
+    //  根据小区编码查询信息
+      let xqxxbaparamter = {xqxxbz : this.xqxxbz}
+      getXQByXqxxbz(xqxxbaparamter)
+      .then(res =>{
+        console.log(res,'详情查询')
+        this.ssfsjstate = res.data.ssfxj
+        this.ssfxj = res.data.ssfxj
+        this.sspcs = res.data.sspcs
+        this.putmodel(res.data)
+      })
+      .catch(err =>{
+        alert(err)
+      })
+
+
+
+
     }
   }
 }
@@ -780,5 +972,7 @@ export default {
 .el-dialog__body{
   padding: 10px 20px !important;
 }
-
+.el-input__inner{
+  color: black !important;
+}
 </style>
