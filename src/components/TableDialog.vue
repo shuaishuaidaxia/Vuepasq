@@ -16,8 +16,8 @@
                   <label class="el-form-item__label" style="width: 150px;">区划地址</label>
                   <div class="el-form-item__content " style="margin-left: 150px;">
                     <el-autocomplete
-                        value-key="label"
-                        key="value"
+                         value-key="id"
+                        value="id"
                         popper-class="my-autocomplete"
                         v-model="qhdzstate"
                         :fetch-suggestions="qhdzSearch"
@@ -27,6 +27,7 @@
                         style="width: 100%"
                         class="el-input--small el-input--suffix"
                         name="qhdz"
+                        clearable
                     >
                       <i
                         class="el-icon-edit el-input__icon"
@@ -590,7 +591,15 @@
 
 <script>
 import ButGroup from "./ButGroup";
-import {GetMainTableninfo, GetSqListByXzq, GetTreeChildren, GetTreeInfo, getXQByXqxxbz, getZrqBypcs} from "../http/api";
+import {
+  GetMainTableninfo,
+  getSqBypcs,
+  GetSqListByXzq,
+  GetTreeChildren,
+  GetTreeInfo,
+  getXQByXqxxbz,
+  getZrqBypcs
+} from "../http/api";
 export default {
   name: "TableDialog",
   components: {ButGroup},
@@ -628,6 +637,7 @@ export default {
       sspcs: '',
       ssfxj: '',
 
+      qdzdm:'', //此属性为区地址代码 表示区划地址 如果此属性发生变化 街路巷也跟着变
       xqxxbz: '',
       xqbjstate: '',
       sszrqstate: '',
@@ -643,6 +653,7 @@ export default {
       mlphzstate: '',
       mlpstate: '',
       xqxzstate: '',
+      infodata: []  //小区详情数据
     }
   },
   computed:{
@@ -680,14 +691,14 @@ export default {
     this.pId = '360100'
     this.Getqudz()
     console.log(this.detailsitem,'详情');
-    this.GetTreeInfo()
+    //this.GetTreeInfo()
 
     },
   watch : {
+    /*详情item变化后更新数据*/
     detailsitem(newvalue){
       this.xqxxbz = newvalue.xqxxbz
       this.GetXQByXqxxbz()
-      console.log(newvalue,'aada')
     },
     getchecktype(newvalue){
      if (newvalue == 'add'){
@@ -712,9 +723,145 @@ export default {
         this.sspcsstate = newvalue
         console.log(this.sspcsdata);
       }
-
       this.sspcsstate = this.findssfsj(this.sspcsdata,newvalue).label
-    }
+    },
+    /*qhdzstate(newvalue){
+      //区地址变化后变街路巷
+      console.log(newvalue,'区地址变了')
+      console.log(this.infodata,'区');
+      console.log(this.qhdzdata,'所有区地址信息');
+    let  findlitem = this.qhdzdata.find((item) => {
+        console.log(item.label,newvalue)
+        return item.label == newvalue
+      })
+      this.pId = findlitem.id
+      console.log(this.pId,'pid')
+      GetTreeChildren(this.Treeparameter)
+      .then(res =>{
+        console.log(res,'区地址变了后的街路巷地址')
+        this.jlxdata = res.data
+     this.jlxstate = this.jlxdata.find((item) =>{
+          return item.id ==this.infodata.jlxdm
+        }).label
+      })
+      .catch(err =>{
+        alert(err)
+      })
+    },*/
+
+    jlxstate(newvalue){
+      /*此模块作用：点击选择区信息
+      * 在街路巷属性发生变化后重新加载街路巷数据*/
+      console.log(newvalue,'区街路巷变化',this.infodata)
+      this.pId = this.infodata.ssfxj.substr(0,6)
+      console.log(this.pId,'caaa');
+      GetTreeChildren(this.Treeparameter)
+          .then(res =>{
+            console.log(res,'区地址变了后的街路巷地址')
+            this.jlxdata = res.data
+            let finditem = this.jlxdata.find((item) =>{
+              return item.id ==this.infodata.jlxdm
+            })
+            console.log(finditem)
+            this.jlxstate = finditem != null ? finditem.label : this.infodata.jlxdm
+          })
+          .catch(err =>{
+            alert(err)
+          })
+    },
+    sspcsstate(){
+      /*此模块作用
+      * 在所属派出所变化后重新加载派出所数据*/
+      console.log(this.infodata,'infodata');
+      if (this.infodata!=null) {
+        this.pId = this.infodata.ssfxj
+        console.log(this.pId, 'pcs数据重新加载')
+        console.log(this.Treeparameter, 'pcs表单');
+        GetTreeInfo(this.Treeparameter)
+            .then(res => {
+              console.log(res, 'pcs数据重新加载')
+              let finditem = res.data.find((item) => {
+                return item.id == this.infodata.sspcs
+              })
+              this.sspcsstate = finditem != null ? finditem.label : this.infodata.sspcs
+            })
+            .catch(err => {
+              alert(err)
+            })
+      }
+    },
+    wgdmstate(){
+      /*此模块作用
+      * 在wgdm数据发生变化后重新加载  */
+      if (this.infodata!=null) {
+        this.pId = this.infodata.sspcs
+        console.log(this.pId, 'wgdm数据重新加载')
+        getSqBypcs(this.Treeparameter)
+            .then(res => {
+              console.log(res, 'wgdm')
+              let finditem = res.data.find((item) => {
+                return item.id == this.infodata.wgdm
+              })
+              console.log(finditem, 'wgdm')
+              this.wgdmstate = finditem != null ? finditem.label : this.infodata.wgdm
+            })
+            .catch(err => {
+              alert(err)
+            })
+      }
+      },
+    sszrqstate(){
+      /*此模块作用
+      * 在zrq数据发生变化是更新*/
+      if (this.infodata!=null) {
+        this.pId = this.infodata.sspcs
+        this.max = 'W4'
+        console.log(this.pId, 'zrq数据重新加载')
+        GetTreeInfo(this.Treeparameter)
+            .then(res => {
+              console.log(res, 'zrq')
+              let finditem = res.data.find((item) => {
+                return item.id == this.infodata.sszrq
+              })
+              console.log(finditem, 'zrq')
+              this.sszrqstate = finditem != null ? finditem.label : this.infodata.sszrq
+            })
+            .catch(err => {
+              alert(err)
+            })
+      }
+    },
+    sssjstate(){
+      /*所属sj变化后更新*/
+      if (this.infodata!=null) {
+        this.pId = ''
+        GetTreeInfo(this.Treeparameter)
+            .then(res => {
+              let finditem = res.data.find((item) => {
+                return item.id == this.infodata.sssj
+              })
+              this.sssjstate = finditem != null ? finditem.label : this.infodata.sssj
+            })
+            .catch(err => {
+              alert(err)
+            })
+      }
+    },
+    ssfsjstate(){
+      /*所属分市局更新*/
+      if (this.infodata!=null)
+      {
+        this.pId = this.infodata.sssj
+        GetTreeInfo(this.Treeparameter)
+            .then(res =>{
+              let finditem = res.data.find((item)=> {
+                return item.id == this.infodata.ssfxj
+              })
+              this.ssfsjstate = finditem != null ? finditem.label : this.infodata.ssfxj
+            })
+            .catch(err =>{alert(err)})
+      }
+      }
   },
   methods: {
     danlchangestate(){
@@ -725,10 +872,11 @@ export default {
     },
     qhdzhandleSelect(item)
     {
-      //区划地址选择后
-      console.log(item,'区划地址')
+      //区划地址选择后 加载街路巷资源
       this.max = 'fxj'
       this.pId = item.id
+      console.log(item,'取地址id');
+      this.qhdzstate = item.label
       this.GetXQTree()
       this.GetSqList()
     },
@@ -737,10 +885,9 @@ export default {
     },
     querySearch(){},
     handlclose(){
-      //右上角的x
+      //右上角的x 关闭
       console.log('我是右上角的x')
       //this.cleanmodel()
-      console.log(this.model)
       this.$store.dispatch('Closemydialog')
     },
     handleRemove(file) {
@@ -795,6 +942,8 @@ export default {
       })
     },
     cleanmodel(){
+      /*清空组件数据*/
+      this.infodata = null
       this.jlxstate = ''
       this.xqckslstate = ''
       this.sszrqstate = ''
@@ -810,7 +959,11 @@ export default {
       this.sssjstate = ''
       this.ssfsjstate = ''
       this.sspcsstate = ''
-      this.wgdmstate= ''
+      this.wgdmstate = ''
+      this.jlxstate =''
+      this.sspcsstate = ''
+      this.wgdmstate = ''
+      this.sszrqstate = ''
     },
     putmodel(data){
       //表单赋值
@@ -827,10 +980,12 @@ export default {
       this.xqldslstate = data.xqldSl //楼栋数量
       this.xqlxstate = data.xqlx == 1 ? '单位' : data.xqlx == 4 ? '楼宇' : data.xqlx ==2 ? '开放式社区' : data.xqlx == 5 ? '农村' : data.xqlx == 3 ? '封闭式小区商业': '其他'  //小区类型
       this.qhdzstate = this.finldqxx(this.qhdzdata,data.ssfxj).label  //所属区地址
-      console.log(this.qhdzdata,'8888')
-      this.ssfsjstate = this.findssfsj(this.ssfxjdata,data.ssfxj).label
+      this.ssfsjstate = data.ssfxj   //所属分市局
+      this.sspcsstate = data.sspcs  //所属派出所
+      this.wgdmstate = data.wgdm  //所属网格代码
+      this.sssjstate = data.sssj
 
-      /*S 所属派出所*/
+    /*  /!*S 所属派出所*!/
       this.pId = this.ssfxj
       GetTreeInfo(this.Treeparameter)
           .then(res =>{
@@ -839,10 +994,10 @@ export default {
           })
           .catch(err =>{
             alert(err)
-          })
+          })*/
       /*E 所属派出所赋值*/
 
-      /*S 网格代码*/
+      /*/!*S 网格代码*!/
       if (data.wgdm!=null){
         this.pId = this.sspcs
         this.max = 'W4'
@@ -864,7 +1019,7 @@ export default {
             .catch(err =>{
               alert(err)
             })
-      }
+      }*/
       /*E 网格代码*/
     },
    finldqxx(data,value){
@@ -891,10 +1046,11 @@ export default {
     },
     GetXQTree()
     {
-      ///街角巷
+      ///根据区信息加载街角巷
       GetTreeChildren(this.Treeparameter)
           .then(res => {
             this.jlxdata = res.data
+            console.log(res,'街路巷请求后的数据')
           })
           .catch(err => {
             console.log(err, '分页请求')
@@ -938,9 +1094,7 @@ export default {
       getXQByXqxxbz(xqxxbaparamter)
       .then(res =>{
         console.log(res,'详情查询')
-        this.ssfsjstate = res.data.ssfxj
-        this.ssfxj = res.data.ssfxj
-        this.sspcs = res.data.sspcs
+        this.infodata = res.data
         this.putmodel(res.data)
       })
       .catch(err =>{

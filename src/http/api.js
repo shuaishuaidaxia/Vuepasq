@@ -4,8 +4,8 @@ const userApi = {
   getMainTable: '/module/kg/xqjbxx/getXQ', //小区详情信息
   getStreetLaneTreeChildrenList: '/module/kg/hierarchyTree/getStreetLaneTreeChildrenList',  //选择区地址后加载街路巷
   getSQListByXzq: '/module/kg/sqSqjbxx/getSQListByXzq', //选择区地址后加载社区
-  getXQByXqxxbz: '/module/kg/xqjbxx/getXQByXqxxbz',  //http://114.117.208.129:18280/kg-zhsq/module/kg/xqjbxx/getXQByXqxxbz?xqxxbz=LYYXQ10810000000014v
-  getzrqBypcs: '/module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity'                  //http://114.117.208.129:18280/kg-zhsq/module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity?pId=360199401000&max=W4&hyzt=0&level= 通过派出所获得责任区
+  getXQByXqxxbz: '/module/kg/xqjbxx/getXQByXqxxbz',  // /module/kg/xqjbxx/getXQByXqxxbz?xqxxbz=LYYXQ10810000000014v
+  getzrqBypcs: '/module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity'   // /module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity?pId=360199401000&max=W4&hyzt=0&level= 通过派出所获得社区
 }
 export function GetTreeInfo (parameter) {
   return request({
@@ -48,7 +48,7 @@ export function getXQByXqxxbz(parameter) {
     headers: { 'content-type': 'application/json' },
   })
 }
-export function getZrqBypcs(parameter) {
+export function getSqBypcs(parameter) {
   return request({
     url: userApi.getzrqBypcs,
     method: 'get',
