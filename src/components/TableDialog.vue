@@ -689,10 +689,9 @@ export default {
   mounted() {
     this.max = 'W4'
     this.pId = '360100'
-    this.Getqudz()
+    this.Getqudz() //加载所有小区信息
     console.log(this.detailsitem,'详情');
     //this.GetTreeInfo()
-
     },
   watch : {
     /*详情item变化后更新数据*/
@@ -705,7 +704,7 @@ export default {
        this.cleanmodel()
      }
     },
-    ssfxj(newvalue){
+    /*ssfxj(newvalue){
       console.log(newvalue,'gfya');
       this.pId = newvalue
       GetTreeInfo(this.Treeparameter)
@@ -724,7 +723,7 @@ export default {
         console.log(this.sspcsdata);
       }
       this.sspcsstate = this.findssfsj(this.sspcsdata,newvalue).label
-    },
+    },*/
     /*qhdzstate(newvalue){
       //区地址变化后变街路巷
       console.log(newvalue,'区地址变了')
@@ -967,7 +966,6 @@ export default {
     },
     putmodel(data){
       //表单赋值
-      console.log('赋值888888888888888888888888888')
       this.jlxstate = data.jlxdm //街路巷
       this.xqckslstate = data.xqcrkSl  //小区出入口数量
       this.sszrqstate = data.sszrq  //所属责任区
@@ -979,11 +977,13 @@ export default {
       this.xqxzstate = data.xqxzdm == '1' ? '智慧小区': '非智慧小区' //小区性质
       this.xqldslstate = data.xqldSl //楼栋数量
       this.xqlxstate = data.xqlx == 1 ? '单位' : data.xqlx == 4 ? '楼宇' : data.xqlx ==2 ? '开放式社区' : data.xqlx == 5 ? '农村' : data.xqlx == 3 ? '封闭式小区商业': '其他'  //小区类型
-      this.qhdzstate = this.finldqxx(this.qhdzdata,data.ssfxj).label  //所属区地址
+      /*this.qhdzstate = this.finldqxx(this.qhdzdata,data.ssfxj).label  //所属区地址*/
+      let  qhdzfinditem = this.qhdzdata.find((item) =>{ return item .id == data.ssfxj.substr(0,data.ssfxj.length-item.id.length)})
+      this.qhdzstate = qhdzfinditem != null ? qhdzfinditem.label : data.ssfxj
       this.ssfsjstate = data.ssfxj   //所属分市局
       this.sspcsstate = data.sspcs  //所属派出所
       this.wgdmstate = data.wgdm  //所属网格代码
-      this.sssjstate = data.sssj
+      this.sssjstate = data.sssj   //所属市局
 
     /*  /!*S 所属派出所*!/
       this.pId = this.ssfxj
@@ -1034,16 +1034,6 @@ export default {
    )
      return itemvalue
    },
-    findssfsj(data,value){
-      //查找分县局
-      let find_item = ''
-      data.forEach((item) =>{
-        if (item.id == value){
-          find_item = item
-        }
-      })
-      return find_item
-    },
     GetXQTree()
     {
       ///根据区信息加载街角巷
@@ -1055,27 +1045,6 @@ export default {
           .catch(err => {
             console.log(err, '分页请求')
           })
-    },
-    GetTreeInfo(){
-      //获取市局信息
-      this.pId = ''
-      GetTreeInfo(this.Treeparameter)
-      .then( res =>{
-        console.log(res.data[0].label,'是啥');
-        this.sssjstate = res.data[0].label
-        this.pId = res.data[0].id
-        GetTreeInfo(this.Treeparameter)
-        .then(res=>{
-          this.ssfxjdata = res.data
-          console.log(res,'草');
-        })
-        .catch(err =>{
-          console.log(err);
-        })
-      })
-      .catch(err =>{
-
-      })
     },
     GetSqList(){
       /*根据区地址加载社区*/
@@ -1100,10 +1069,6 @@ export default {
       .catch(err =>{
         alert(err)
       })
-
-
-
-
     }
   }
 }
