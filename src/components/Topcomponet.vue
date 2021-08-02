@@ -1,58 +1,57 @@
 <template>
-  <div class="el-row">
-    <div class="el-col-18">
-      <!-- 警务网格下拉框   -->
-      <div class="inlinback">
-        <el-select v-model="isRelationGrid" clearable placeholder="请选择"  @change="RGselectcd" class="inlinback">
-          <el-option
-              v-for="item in curriculums"
-              :key="item.value"
-              :label="item.title"
-              :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <!-- 智慧小区下拉框  -->
-      </div>
-      <div class="inlinback">
-        <el-select v-model="zhCurrdata" clearable placeholder="请选择"  @change="zhselectcd">
-          <el-option
-              v-for="item in xqxzdmdata"
-              :key="item.value"
-              :label="item.title"
-              :value="item.value"
-          >
-          </el-option>
-        </el-select
-        ></div>
-      <!-- 小区类型下拉框   -->
-      <div class="inlinback">
-        <el-select v-model="xqlxCurrdata" clearable placeholder="请选择"  @change="xqlxselectcd">
-          <el-option
-              v-for="item in xqlxsetectdata"
-              :key="item.value"
-              :label="item.title"
-              :value="item.value"
-          >
-          </el-option>
-        </el-select
-        ></div>
-      <div class="inlinback">
-        <el-input v-model="inputdata" placeholder="请输入小区名字或地址" ></el-input>
-      </div>
-      <div class="inlinback">
-        <el-button type="primary" @click="SearchBut">搜索</el-button>
-      </div>
-    </div>
+  <el-row :gutter="10">
+    <el-form :inline="true" v-model="form">
+      <div style="float:left">
+        <el-form-item>
+          <el-select v-model="isRelationGrid" clearable placeholder="请选择"  @change="RGselectcd">
+            <el-option
+                v-for="item in curriculums"
+                :key="item.value"
+                :label="item.title"
+                :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
 
-    <div class="el-col-6">
-      <div class="rbinlibock">
-        <el-button type="primary" @click="addxq">新增</el-button>
-        <el-button type="primary">批量删除</el-button>
-      </div>
-    </div>
+        <el-form-item>
+          <el-select v-model="zhCurrdata" clearable placeholder="请选择"  @change="zhselectcd">
+            <el-option
+                v-for="item in xqxzdmdata"
+                :key="item.value"
+                :label="item.title"
+                :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
 
-  </div>
+        <el-form-item>
+          <el-select v-model="xqlxCurrdata" clearable placeholder="请选择"  @change="xqlxselectcd">
+            <el-option
+                v-for="item in xqlxsetectdata"
+                :key="item.value"
+                :label="item.title"
+                :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="inputdata" placeholder="请输入小区名字或地址" ></el-input>
+          <el-button type="primary" @click="SearchBut">搜索</el-button>
+        </el-form-item>
+      </div>
+
+       <div style="float: right"  >
+         <el-form-item>
+           <el-button type="primary" @click="addxq">新增</el-button>
+           <el-button type="primary">批量删除</el-button>
+         </el-form-item>
+       </div>
+
+    </el-form>
+  </el-row>
 </template>
 
 <script>
@@ -65,6 +64,7 @@ export default {
   },
   data () {
     return {
+      form:'',
       inputdata:'',
       isRelationGrid:this.selectCurriculums,
       zhCurrdata: this.zhCurriculums,
@@ -111,11 +111,7 @@ export default {
 </script>
 
 <style scoped>
-.inlinback{
-  display: inline-block;
-  float: left;
-  margin-right: 5px;
-}
+
 .el-select{
   width: 130px;
   margin-left: 0px;
@@ -123,10 +119,7 @@ export default {
 .el-button{
   width: auto;
 }
-.rbinlibock{
- /* display: inline-block;*/
-  float: right;
-}
+
 .el-input{
   width: 300px;
 }

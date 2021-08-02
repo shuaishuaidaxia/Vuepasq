@@ -44,8 +44,6 @@ export default {
       let params = {pId: _parentID, max: 'W4', hyzt: '0', level: ''};
       GetTreeInfo(params)
           .then(res => {
-            console.log(res)
-
             let data = res.data;
             data.forEach(item => {
               item.label = item.label

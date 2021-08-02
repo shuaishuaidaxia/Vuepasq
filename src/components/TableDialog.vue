@@ -7,35 +7,19 @@
           <i class="header-icon el-icon-user-solid"></i>基本信息
         </template>
         <div class="el-collapse-item__content">
-          <el-form class="el-form" ref="form" :model="form" label-width="150px" size="small">
+          <el-form class="el-form" ref="form" :model="form" label-width="150px" size="small" :rules="rules" >
             <el-row class="row-bg">
             <!--S 划分地址-->
               <div class="el-col el-col-11">
-                    <el-form-item  label="区划分" required >
-                    <el-autocomplete
-                        value-key="label"
-                        value="id"
-                        popper-class="my-autocomplete"
-                        v-model="form.qhdzstate"
-                        :fetch-suggestions="((queryString, cb)=>{querySearch(queryString, cb,'qhdz')})"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="((item)=>{handleSelect(item,'qhdz')})"
-                        style="width: 100%"
-                        name="qhdzname"
-                        size="mini"
-                        clearable
-                        ref="myAutocomplete"
-                    >
-                      <i
-                        class="el-icon-edit el-input__icon"
-                        slot="suffix"
-                        @click="handleIconClick">
-                    </i>
-                      <template slot-scope="{item}">
-                        <div class="qhdz">{{ item.label}}</div>
-                      </template>
-                    </el-autocomplete>
+                    <el-form-item  label="区划分" required  prop="qhdzstate" >
+                      <el-select clearable v-model="form.qhdzstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('qhdz')" style="width: 100%">
+                        <el-option
+                            v-for="item in this.qhdzdata"
+                            :key="item.id"
+                            :label="item.label"
+                            :value="item.id">
+                        </el-option>
+                      </el-select>
                     </el-form-item>
                   </div>
               <!--E 划分地址-->
@@ -43,25 +27,14 @@
               <!--S 街路巷-->
               <div class="el-col el-col-11">
                   <el-form-item  label="街路巷" required>
-                    <el-autocomplete
-                        value-key="label"
-                        popper-class="my-autocomplete"
-                        v-model="form.jlxstate"
-                        :fetch-suggestions="((queryString, cb)=>{querySearch(queryString, cb,'jlx')})"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="((item)=>{handleSelect(item,'jlx')})"
-                        style="width: 100%"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.label}}</div>
-                      </template>
-                    </el-autocomplete>
+                    <el-select v-model="form.jlxstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('jlx')" style="width: 100%">
+                      <el-option
+                          v-for="item in this.jlxdata"
+                          :key="item.id"
+                          :label="item.label"
+                          :value="item.id">
+                      </el-option>
+                    </el-select>
                   </el-form-item>
               </div>
               <!--E 街路巷-->
@@ -71,24 +44,14 @@
                 <!--S 社区-->
                 <div class="el-col el-col-11">
                   <el-form-item  label="社区" required>
-                      <el-autocomplete
-                          popper-class="my-autocomplete"
-                          v-model="form.sqstate"
-                          :fetch-suggestions="((queryString, cb)=>{querySearch(queryString, cb,'sq')})"
-                          placeholder="请输入内容"
-                          :disabled="this.disabled"
-                          @select="((item)=>{handleSelect(item,'sq')})"
-                          style="width: 100%"
-                      >
-                        <i
-                            class="el-icon-edit el-input__icon"
-                            slot="suffix"
-                            @click="handleIconClick">
-                        </i>
-                        <template slot-scope="{ item }">
-                          <div class="name">{{ item.sqmc }}</div>
-                        </template>
-                      </el-autocomplete>
+                    <el-select v-model="form.sqstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('sq')" style="width: 100%">
+                      <el-option
+                          v-for="item in this.sqdata"
+                          :key="item.sqxxbz"
+                          :label="item.sqmc"
+                          :value="item.sqxxbz">
+                      </el-option>
+                    </el-select>
                   </el-form-item>
                 </div>
                 <!--E 社区-->
@@ -204,7 +167,15 @@
             <div class="el-row">
               <div class="el-col el-col-11">
                 <el-form-item  label="使用状态代码" required>
-                    <el-select  value="" :disabled="this.disabled" placeholder="请选择"  class="el-input el-input--mini  el-input--suffix"></el-select>
+                    <el-select  value="" :disabled="this.disabled" v-model="form.syztdmstate" placeholder="请选择"  class="el-input el-input--mini  el-input--suffix">
+                      <el-option
+                          v-for="item in syztdmdata"
+                          :key="item.value"
+                          :label="item.title"
+                          :value="item.value"
+                      >
+                      </el-option>
+                    </el-select>
                 </el-form-item>
               </div>
               <!--E 使用状态代码-->
@@ -230,7 +201,7 @@
               <!--S 小区启用日期-->
               <div class="el-col el-col-11">
                 <el-form-item  label="小区启用日期" required>
-                    <el-date-picker size="large" type="date"   value="" :disabled="this.disabled" placeholder="选择日期"  style="width: 100%"  class=" el-input--small el-input--suffix "></el-date-picker>
+                    <el-date-picker size="large" type="date" v-model="form.xqqyrq"  value="" :disabled="this.disabled" placeholder="选择日期"  style="width: 100%"  class=" el-input--small el-input--suffix "></el-date-picker>
                 </el-form-item>
               </div>
             </div>
@@ -248,25 +219,8 @@
               <!--S 居村委代码-->
               <div class="el-col el-col-11">
                 <el-form-item  label="居村委代码" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.state"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select  value="" :disabled="this.disabled"   placeholder="请选择" class="el-input el-input--mini  el-input--suffix">
+                  </el-select>
                 </el-form-item>
             </div>
             </div>
@@ -276,25 +230,9 @@
             <div class="el-row">
               <div class="el-col el-col-11">
                 <el-form-item  label="乡镇街道" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.state"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select  value="" :disabled="this.disabled"  placeholder="请选择" class="el-input el-input--mini  el-input--suffix">
+
+                  </el-select>
                 </el-form-item>
               </div>
             </div>
@@ -304,26 +242,14 @@
             <div class="el-row">
               <div class="el-col el-col-11">
                 <el-form-item  label="所属市局" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.sssjstate"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                        <span class="addr">{{ item.address }}</span>
-                      </template>
-                    </el-autocomplete>
+                  <el-select v-model="form.sssjstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('sssj')" style="width: 100%">
+                    <el-option
+                        v-for="item in this.sssjdata"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
             </div>
               <!--E 所属市局-->
@@ -331,25 +257,14 @@
               <!--S 所属分局-->
               <div class="el-col el-col-11">
                 <el-form-item  label="所属分局" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.ssfsjstate"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select v-model="form.ssfsjstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('ssfsj')" style="width: 100%">
+                    <el-option
+                        v-for="item in this.ssfxjdata"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </div>
             </div>
@@ -359,25 +274,14 @@
             <div class="el-row">
               <div class="el-col el-col-11">
                 <el-form-item  label="所属派出所" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.sspcsstate"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select v-model="form.sspcsstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('sspcs')" style="width: 100%">
+                    <el-option
+                        v-for="item in this.sspcsdata"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </div>
               <!--E 所属派出所-->
@@ -385,25 +289,14 @@
               <!--S 警务网格-->
               <div class="el-col el-col-11">
                 <el-form-item  label="警务网格" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.wgdmstate"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select v-model="form.wgdmstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('wgdm')" style="width: 100%">
+                    <el-option
+                        v-for="item in this.jwwgdata"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </div>
             </div>
@@ -413,25 +306,14 @@
             <div class="el-row">
               <div class="el-col el-col-11">
                 <el-form-item  label="所属责任区" required>
-                    <el-autocomplete
-                        popper-class="my-autocomplete"
-                        v-model="form.sszrqstate"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入内容"
-                        :disabled="this.disabled"
-                        @select="handleSelect"
-                        style="width: 100%"
-                        class="el-input--small el-input--suffix"
-                    >
-                      <i
-                          class="el-icon-edit el-input__icon"
-                          slot="suffix"
-                          @click="handleIconClick">
-                      </i>
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                      </template>
-                    </el-autocomplete>
+                  <el-select v-model="form.sszrqstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('sszrq')" style="width: 100%">
+                    <el-option
+                        v-for="item in this.sszrqdata"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </div>
               <!--E 所属责任区-->
@@ -447,42 +329,18 @@
 
             <!--S 采集照片-->
             <div class="el-row">
-              <div class="el-col el-col-11">
-                <el-form-item  label="采集照片" required>
-                    <el-upload
-                        action="#"
-                        list-type="picture-card"
-                        :auto-upload="false">
-                      <i slot="default" class="el-icon-plus"></i>
-                      <div slot="file" slot-scope="{file}">
-                        <img
-                            class="el-upload-list__item-thumbnail"
-                            :src="file.url" alt=""
-                        >
-                        <span class="el-upload-list__item-actions">
-        <span
-            class="el-upload-list__item-preview"
-            @click="handlePictureCardPreview(file)"
-        >
-          <i class="el-icon-zoom-in"></i>
-        </span>
-        <span
-            v-if="!imagedisabled"
-            class="el-upload-list__item-delete"
-            @click="handleDownload(file)"
-        >
-          <i class="el-icon-download"></i>
-        </span>
-        <span
-            v-if="!imagedisabled"
-            class="el-upload-list__item-delete"
-            @click="handleRemove(file)"
-        >
-          <i class="el-icon-delete"></i>
-        </span>
-      </span>
-                      </div>
-                    </el-upload>
+              <div class="el-col el-col-22" >
+                <el-form-item  label="采集照片" required style="float: left">
+                  <el-upload
+                      action="https://jsonplaceholder.typicode.com/posts/"
+                      list-type="picture-card"
+                      :on-preview="handlePictureCardPreview"
+                      :on-remove="handleRemove">
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                  <el-dialog :visible.sync="dialogVisible" :append-to-body="true" width="800px" >
+                    <img width="100%" :src="form.dialogImageUrl" alt="">
+                  </el-dialog>
                 </el-form-item>
               </div>
             </div>
@@ -495,6 +353,9 @@
     :butbc_isdisabled="this.$store.state.butbc_isdisabled"
     :butcz_isdisabled="this.$store.state.butcz_isdisabled"
     :butqx_isdisabled="this.$store.state.butqx_isdisabled"
+    @qx_click="qx_click"
+    @cz_click="zc_click"
+    @bc_click="bc_click('form')"
     >
     </ButGroup>
   </el-dialog>
@@ -523,52 +384,50 @@ export default {
     return {
       formLabelWidth: '100%',
       form: {
-        jlxstate: '',
-        xqckslstate: '',
-        sszrqstatec: '',
-        xqbjstate: '',
-        xqmcstate: '',
-        mlpstate: '',
-        mlphzstate: '',
-        qdzmcstate: '',
-        xqxzstate: '',
-        xqldslstate: '',
-        xqlxstate: '',
-        qhdzstate: '',
-        sssjstate: '',
-        ssfsjstate: '',
-        sspcsstate: '',
-        wgdmstate: '',
-        sszrqstate: '',
+        jlxstate: '',   //街路巷
+        xqckslstate: '',  //小区出入口数量
+        xqbjstate: '',    //小区边界
+        xqmcstate: '',   //小区名称
+        mlpstate: '',    // 门牌
+        mlphzstate: '',  //门牌后缀
+        qdzmcstate: '',  //全地址名称
+        xqxzstate: '',   //小区性质
+        xqldslstate: '',  //小区楼栋数量
+        xqlxstate: '',    //小区类型
+        qhdzstate: '',    //区划分地址
+        sssjstate: '',    //所属sj
+        ssfsjstate: '',   //所属fsj
+        sspcsstate: '',   // 所属pcs
+        wgdmstate: '',   //网格代码
+        sszrqstate: '',  //责任区
         state: '',
-        sqstate: ''
+        sqstate: '',      //社区
+        syztdmstate:'',    //使用状态代码
+        dialogImageUrl: '', //图片地址
+        xqqyrq:'',          //小区启用日期
       },
-      dialogImageUrl: '',
       dialogVisible: false,
-      imagedisabled: false,
-
-      /*autocomplete*/
-      qhdzdata: [],  //区划分
-      jlxdata: [],  //街路巷
-      sqdata: [], //社区
       xqxzdmdata: [{title: '智慧', value: 1}, {title: '非智慧', value: 0}],
       xqlxsetectdata: [{title: '单位', value: 1}, {title: '楼宇', value: 4}, {title: '开放式社区', value: 2}, {title: '农村', value: 5
       }, {title: '其他', value: 99}, {title: '封闭式小区商业', value: 3}],
+      syztdmdata: [{title: '启用',value:10},{title:'未启用',value: 20}], //
 
+      rules:{
+        qhdzstate:[{require: true, message: '此处不能为空',trigger: 'blur'}]
+      },
       sssjdata: [],
       ssfxjdata: [],
       sspcsdata: [],
       jwwgdata: [],
+      qhdzdata: [],  //区划分
+      jlxdata: [],  //街路巷
+      sqdata: [], //社区
+      sszrqdata: [],
 
       pId: '',
       max: '',
       hyzt: 0,
       level: '',
-      sssj: '',
-      sspcs: '',
-      ssfxj: '',
-
-      qdzdm: '', //此属性为区地址代码 表示区划地址 如果此属性发生变化 街路巷也跟着变
       xqxxbz: '',
       infodata: []  //小区详情数据
     }
@@ -599,28 +458,28 @@ export default {
     },
     getchecktype() {
       return this.$store.state.dilongtype
-    }
+    },
   },
   created() {
     that = this
     console.log(this.disabled, '组件状态')
   },
   filters: {
-    qhdzfilter: function (value) {
+   /* qhdzfilter: function (value) {
       console.log(value, 'qhdzfilter')
-      /* console.log(that.qhdzdata,'qhdzfilter');*/
       const finditem = that.qhdzdata.find((item) => {
         return item.id == value
       })
       console.log(finditem, 'qhdzfilter')
       return finditem.label
-    }
+    }*/
   },
   mounted() {
-    that = this
-    this.max = 'W4'
-    this.pId = '360100'
-    this.Getqudz() //加载所有小区信息
+      that = this
+      this.getjuinfo()
+      this.max = 'W4'
+      this.pId = '360100'
+      this.Getqudz('360100') //加载所有小区信息
     console.log(this.detailsitem, '详情');
     //this.GetTreeInfo()
   },
@@ -631,92 +490,113 @@ export default {
       this.GetXQByXqxxbz()
     },
     getchecktype(newvalue) {
-      if (newvalue == 'add') {
         this.cleanmodel()
-      }
     },
     'form.jlxstate': {
       handler() {
-        if (this.infodata != null){
-          this.pId = this.infodata.ssfxj.substr(0, 6)
-          console.log(this.pId, 'caaa');
-          GetTreeChildren(this.Treeparameter)
-              .then(res => {
-                console.log(res, '区地址变了后的街路巷地址')
-                this.jlxdata = res.data
-                let finditem = this.jlxdata.find((item) => {
-                  return item.id == this.infodata.jlxdm
-                })
-                console.log(finditem)
-                this.form.jlxstate = finditem != null ? finditem.label : this.infodata.jlxdm
-              })
-              .catch(err => {
-                alert(err)
-              })
+        if (this.getchecktype == 'add' ){
+          if (this.form.jlxstate != '')
+          {
+            this.form.qdzmcstate = this.qhdzdata.find((item)=>{return item.id == this.form.qhdzstate}).label
+            this.form.qdzmcstate += this.jlxdata.find((item)=>{return item.id == this.form.jlxstate}).label
+          }
+
         }
+        else {
+          if (this.infodata != null){
+            this.pId = this.infodata.ssfxj.substr(0, 6)
+            console.log(this.pId, 'caaa');
+            GetTreeChildren(this.Treeparameter)
+                .then(res => {
+                  this.jlxdata = res.data
+                  let finditem = this.jlxdata.find((item) => {
+                    return item.id == this.infodata.jlxdm
+                  })
+                  this.form.jlxstate = finditem != null ? finditem.label : this.infodata.jlxdm
+                })
+                .catch(err => {
+                  alert(err)
+                })
+          }
+        }
+
         }
     },
     'form.sspcsstate': {
       handler() {
-        if (this.infodata != null) {
-          this.pId = this.infodata.ssfxj
-          console.log(this.pId, 'pcs数据重新加载')
-          console.log(this.Treeparameter, 'pcs表单');
-          GetTreeInfo(this.Treeparameter)
-              .then(res => {
-                console.log(res, 'pcs数据重新加载')
-                let finditem = res.data.find((item) => {
-                  return item.id == this.infodata.sspcs
+        if (this.getchecktype == 'add') {
+
+        } else {
+          if (this.infodata != null) {
+            this.pId = this.infodata.ssfxj
+            GetTreeInfo(this.Treeparameter)
+                .then(res => {
+                  let finditem = res.data.find((item) => {
+                    return item.id == this.infodata.sspcs
+                  })
+                  this.form.sspcsstate = finditem != null ? finditem.label : this.infodata.sspcs
                 })
-                this.form.sspcsstate = finditem != null ? finditem.label : this.infodata.sspcs
-              })
-              .catch(err => {
-                alert(err)
-              })
+                .catch(err => {
+                  alert(err)
+                })
+          }
         }
       }
     },
     'form.wgdmstate': {
       handler() {
-        if (this.infodata != null) {
-          this.pId = this.infodata.sspcs
-          console.log(this.pId, 'wgdm数据重新加载')
-          getSqBypcs(this.Treeparameter)
-              .then(res => {
-                console.log(res, 'wgdm')
-                let finditem = res.data.find((item) => {
-                  return item.id == this.infodata.wgdm
+        if (this.getchecktype == 'add') {
+
+        } else {
+          if (this.infodata != null) {
+            this.pId = this.infodata.sspcs
+            console.log(this.pId, 'wgdm数据重新加载')
+            getSqBypcs(this.Treeparameter)
+                .then(res => {
+                  console.log(res, 'wgdm')
+                  let finditem = res.data.find((item) => {
+                    return item.id == this.infodata.wgdm
+                  })
+                  console.log(finditem, 'wgdm')
+                  this.form.wgdmstate = finditem != null ? finditem.label : this.infodata.wgdm
                 })
-                console.log(finditem, 'wgdm')
-                this.form.wgdmstate = finditem != null ? finditem.label : this.infodata.wgdm
-              })
-              .catch(err => {
-                alert(err)
-              })
+                .catch(err => {
+                  alert(err)
+                })
+          }
         }
       }
     },
    'form.sszrqstate': {
      handler() {
-       if (this.infodata != null) {
-         this.pId = this.infodata.sspcs
-         this.max = 'W4'
-         GetTreeInfo(this.Treeparameter)
-             .then(res => {
-               let finditem = res.data.find((item) => {
-                 return item.id == this.infodata.sssj
+       if (this.getchecktype == 'add') {
+
+       } else {
+         if (this.infodata != null) {
+           this.pId = this.infodata.sspcs
+           this.max = 'W4'
+           GetTreeInfo(this.Treeparameter)
+               .then(res => {
+                 let finditem = res.data.find((item) => {
+                   return item.id == this.infodata.sssj
+                 })
+                 this.form.sszrqstate = finditem != null ? finditem.label : this.infodata.sszrq
                })
-               this.form.sszrqstate = finditem != null ? finditem.label : this.infodata.sszrq
-             })
-             .catch(err => {
-               alert(err)
-             })
+               .catch(err => {
+                 alert(err)
+               })
+         }
        }
      }
    },
      'form.sssjstate': {
        handler() {
-         if (this.infodata != null) {
+         if (this.getchecktype == 'add'){
+
+         }
+         else
+         {
+           if (this.infodata != null) {
            this.pId = ''
            GetTreeInfo(this.Treeparameter)
                .then(res => {
@@ -730,85 +610,134 @@ export default {
                })
          }
        }
+         }
+
      },
      'form.ssfsjstate': {
        handler() {
          console.log('cccc')
-         if (this.infodata != null) {
-           this.pId = this.infodata.sssj
-           GetTreeInfo(this.Treeparameter)
-               .then(res => {
-                 let finditem = res.data.find((item) => {
-                   return item.id == this.infodata.ssfxj
-                 })
+         if (this.getchecktype == 'add') {
 
-                 this.form.ssfsjstate = finditem != null ? finditem.label : this.infodata.ssfxj
-               })
-               .catch(err => {
-                 alert(err)
-               })
+         } else {
+           if (this.infodata != null) {
+             this.pId = this.infodata.sssj
+             GetTreeInfo(this.Treeparameter)
+                 .then(res => {
+                   let finditem = res.data.find((item) => {
+                     return item.id == this.infodata.ssfxj
+                   })
+
+                   this.form.ssfsjstate = finditem != null ? finditem.label : this.infodata.ssfxj
+                 })
+                 .catch(err => {
+                   alert(err)
+                 })
+           }
          }
        }
-     }
+     },
+    'form.qhdzstate':{
+      handler(){
+        console.log(this.form.qhdzstate,'form.qhdzstate')
+        if (this.getchecktype == 'add'){
+          if (this.form.qhdzstate != '')
+          {
+            this.form.qdzmcstate = this.qhdzdata.find((item)=>{return item.id == this.form.qhdzstate}).label
+            this.form.jlxstate = ''
+          }
+
+        }
+
+      }
+    }
   },
 
   methods: {
-    danlchangestate(){
-      this.$emit("danlchangestate");
-    },
-    handleSelect(item,filed){
-      console.log(item,filed,'input点击')
-      switch (filed){
+   async hanldselected(type){
+      switch (type){
         case 'qhdz':
-          this.max = 'fxj'
-          this.pId = item.id
-          console.log(item,'取地址id');
-          this.form.qhdzstate = item.label
+          this.pId = this.form.qhdzstate
+          this.max = 'fsj'
+          this.form.jlxstate = ''
+          this.form.sqstate = ''
           this.GetXQTree()
           this.GetSqList()
           break;
           case 'jlx':
-            this.form.jlxstate = item.label
-          break;
+            break;
           case 'sq':
-            this.form.sqstate = item.sqmc
+            break;
+        case 'sssj':
+         this.ssfxjdata  =  await this.getjjinfoBypId(this.form.sssjstate)
+          break
+        case 'ssfsj':
+          this.sspcsdata = await this.getjjinfoBypId(this.form.ssfsjstate)
           break;
+          case 'sspcs':
+            this.jwwgdata = await this.getjjinfoBypId(this.form.sspcsstate)
+            this.sszrqdata = await this.getzrqinfoBypcs(this.form.sspcsstate)
+            break;
+        case 'wgdm':
+          break
       }
     },
-    handleIconClic(){
-      console.log('hadleIconclic')
+   async getzrqinfoBypcs(pcs){
+     /*通过派出所获取责任区*/
+     this.pId = pcs
+      let res = await GetTreeInfo(this.Treeparameter)
+     console.log()
+     return res.data
     },
-    querySearch(queryString, cb,filed){
-      //搜所
-      this.$refs.myAutocomplete.activated=true || this.$refs.myAutocomplete.handleFocus()
-      console.log(filed,'fild')
-      let restaurants = null
-      switch (filed){
-        case 'qhdz':
-          restaurants = this.qhdzdata
-          break;
-        case 'jlx':
-          restaurants = this.jlxdata
-          break;
-          case 'sq':
-            restaurants = this.sqdata
-          break;
-      }
-      let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
+    async  getjjinfoBypId(pid){
+      /*根据pid获取数据*/
+      this.pId = pid
+      let  response = await  getSqBypcs(this.Treeparameter)
+      return response.data
+    },
+    async getjuinfo(){
+      /*开句获取sj信息*/
+      await  getSqBypcs(this.Treeparameter)
+          .then(res =>{
+              console.log(res.data,'开句数据sj')
+            this.sssjdata = res.data
+          })
+          .catch(err => alert(err))
+    },
+    qx_click(){
+     //取消按钮
+      this.$store.dispatch('Closemydialog')
+    },
+    zc_click(){
+     //重置
+     this.cleanmodel()
+     },
+    bc_click(){
+     //保存代码
+      this.$refs['form'].validate((vaid)=>{
+        if (vaid){
+              alert('提交表单')
+        }
+        else {
+          console.log('提交失败!')
+        }
+      })
+    },
+    danlchangestate(){
+     //改变对话框的可见状态
+      this.$emit("danlchangestate");
     },
     handlclose(){
       //右上角的x 关闭
-      console.log('我是右上角的x')
-      //this.cleanmodel()
       this.$store.dispatch('Closemydialog')
     },
     handleRemove(file) {
+     //照片移除
       console.log(file);
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
+     //放大图片
+      this.form.dialogImageUrl = file.url;
+      console.log(file.url,'图片路径')
       this.dialogVisible = true;
     },
     handleDownload(file) {
@@ -819,14 +748,9 @@ export default {
       //input图标点击事件
       console.log(ev);
     },
-    createFilter(queryString) {
-      //过滤建议列表
-      return (restaurant) => {
-        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) >=0);
-      };
-    },
-    Getqudz(){
+    Getqudz(pid){
       //区划地址 区信息
+      this.pId = pid
       GetTreeChildren(this.Treeparameter)
       .then( res =>{
         this.qhdzdata = res.data
@@ -859,6 +783,10 @@ export default {
       this.form.sspcsstate = ''
       this.form.wgdmstate = ''
       this.form.sszrqstate = ''
+      this.form.sqstate = ''
+      this.form.dialogImageUrl =''
+      this.form.xqqyrq = ''
+      this.form.syztdmstate = ''
     },
     putmodel(data){
       //表单赋值
