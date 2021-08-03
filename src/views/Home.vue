@@ -19,6 +19,7 @@
             @xqmzreceive="inputchange"
             @SearchBut="SearchBut"
             @addxq="addxq"
+            @batchDelete="deleteitem"
         ></Topcomponet>
       </el-header>
       <el-main>
@@ -27,7 +28,10 @@
         :pagetotal="pagetotal"
         @handlcurrent="handlcurrent"
         :loading="loading"
-        :currentpage="pageIndex">
+        :currentpage="pageIndex"
+        @batchDelete="batchDelete"
+        @handldelete="handldelete"
+        >
         </MainTable>
       </el-main>
     </el-container>
@@ -63,7 +67,8 @@ export default {
       pageSize: 10,
       pageIndex: 1,
       Tabledata: [], //表格数据
-      pagetotal: 0
+      pagetotal: 0,
+      deleteitems: [] //批量删除数据
     }
   },
   watch: {
@@ -144,16 +149,17 @@ export default {
           }
         }
       }
-
     },
     handlchangeloding(){
       this.loading = ! this.loading
     },
     cleanparentinfo(){
+      //tree选择 清空表单项
       this.sssj = ''
       this.ssfxj = ''
       this.sspcs = ''
       this.wgdm = ''
+      this.pageIndex = 1
     },
     GetXQ()
     {
@@ -165,7 +171,6 @@ export default {
           this.Tabledata = res.data.dataList
           this.pagetotal = res.data.totalCount
           this. pageIndex = res.data.pageIndex
-
           console.log(this.Tabledata, '分页请求')
         })
             .catch(err => {
@@ -182,6 +187,48 @@ export default {
       //新增按钮点击
       console.log('新增按钮被点击',this.addxqstate)
       this.$store.dispatch('Openmydialong','add')
+    },
+    batchDelete(value){
+      //批量删除
+      console.log(value,'home-deletedata')
+      this.deleteitems = value
+    },
+    deleteitem(){
+      //批量删除按钮
+      console.log('批量删除按钮')
+      this.$confirm('此操作将永久删除'+this.deleteitems.length+'条'+'数据, 是否继续?', '提示', {
+       confirmButtonText: '确定',
+       cancelButtonText: '取消',
+       type: 'warning'
+     }).then(() => {
+       this.$message({
+         type: 'success',
+         message: '删除成功!(只做提示并未删除)'
+       });
+     }).catch(() => {
+       this.$message({
+         type: 'info',
+         message: '已取消删除'
+       });
+     });
+    },
+    handldelete(value){
+      //删除单行数据
+      this.$confirm('此操作将永久删除'+value.dzmc+', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!(只做提示并未删除)'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     }
   }
 }

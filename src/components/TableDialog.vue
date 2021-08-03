@@ -12,7 +12,9 @@
             <!--S 划分地址-->
               <div class="el-col el-col-11">
                     <el-form-item  label="区划分" required  prop="qhdzstate" >
-                      <el-select clearable v-model="form.qhdzstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('qhdz')" style="width: 100%">
+                      <el-select  v-model="form.qhdzstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('qhdz')" style="width: 100%"
+                       @clear="selectclear('qhdz')" clearable
+                      >
                         <el-option
                             v-for="item in this.qhdzdata"
                             :key="item.id"
@@ -26,8 +28,8 @@
 
               <!--S 街路巷-->
               <div class="el-col el-col-11">
-                  <el-form-item  label="街路巷" required>
-                    <el-select v-model="form.jlxstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('jlx')" style="width: 100%">
+                  <el-form-item  label="街路巷" required prop="jlxstate">
+                    <el-select clearable  @clear="selectclear('jlx')" v-model="form.jlxstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('jlx')" style="width: 100%">
                       <el-option
                           v-for="item in this.jlxdata"
                           :key="item.id"
@@ -104,7 +106,7 @@
             <div class="el-row">
               <!--S 小区名称-->
               <div class="el-col el-col-11">
-                <el-form-item  label="小区名称" required>
+                <el-form-item  label="小区名称" required prop="xqmcstate">
                     <el-input  value="" :disabled="this.disabled"  v-model="form.xqmcstate" class="el-input el-input--mini  el-input--suffix"></el-input>
                 </el-form-item>
               </div>
@@ -241,7 +243,7 @@
             <!--S 所属市局-->
             <div class="el-row">
               <div class="el-col el-col-11">
-                <el-form-item  label="所属市局" required>
+                <el-form-item  label="所属市局" required prop="sssjstate" >
                   <el-select v-model="form.sssjstate" filterable placeholder="请选择" :disabled="this.disabled"  @change="hanldselected('sssj')" style="width: 100%">
                     <el-option
                         v-for="item in this.sssjdata"
@@ -413,7 +415,10 @@ export default {
       syztdmdata: [{title: '启用',value:10},{title:'未启用',value: 20}], //
 
       rules:{
-        qhdzstate:[{require: true, message: '此处不能为空',trigger: 'blur'}]
+        qhdzstate:[{required: true, message: '此处不能为空',trigger: 'change'}],
+        jlxstate: [{required: true, message: '此处不能为空',trigger: 'change'}],
+        xqmcstate:[{required: true, message: '此处不能为空',trigger: 'blur'}],
+        sssjstate:[{required: true, message: '此处不能为空',trigger: 'blur'}]
       },
       sssjdata: [],
       ssfxjdata: [],
@@ -429,7 +434,10 @@ export default {
       hyzt: 0,
       level: '',
       xqxxbz: '',
-      infodata: []  //小区详情数据
+
+      infodata: [], //小区详情数据
+      updatecontent: 0
+
     }
   },
   computed: {
@@ -465,14 +473,6 @@ export default {
     console.log(this.disabled, '组件状态')
   },
   filters: {
-   /* qhdzfilter: function (value) {
-      console.log(value, 'qhdzfilter')
-      const finditem = that.qhdzdata.find((item) => {
-        return item.id == value
-      })
-      console.log(finditem, 'qhdzfilter')
-      return finditem.label
-    }*/
   },
   mounted() {
       that = this
@@ -486,8 +486,14 @@ export default {
   watch: {
     /*详情item变化后更新数据*/
     detailsitem(newvalue) {
-      this.xqxxbz = newvalue.xqxxbz
-      this.GetXQByXqxxbz()
+      console.log(newvalue);
+      if (newvalue != null)
+      {
+        console.log('请求小区详情')
+        this.xqxxbz = newvalue.xqxxbz
+        this.GetXQByXqxxbz()
+      }
+
     },
     getchecktype(newvalue) {
         this.cleanmodel()
@@ -500,46 +506,55 @@ export default {
             this.form.qdzmcstate = this.qhdzdata.find((item)=>{return item.id == this.form.qhdzstate}).label
             this.form.qdzmcstate += this.jlxdata.find((item)=>{return item.id == this.form.jlxstate}).label
           }
+          if (this.form.jlxstate == '' && this.form.qhdzstate != ''){
+            this.form.qdzmcstate = this.qhdzdata.find((item)=>{return item.id == this.form.qhdzstate}).label
+          }
 
         }
-        else {
-          if (this.infodata != null){
+         if (this.getchecktype == 'details' ) {
+           let finditem = null
+           if (this.infodata != null){
             this.pId = this.infodata.ssfxj.substr(0, 6)
             console.log(this.pId, 'caaa');
             GetTreeChildren(this.Treeparameter)
                 .then(res => {
                   this.jlxdata = res.data
-                  let finditem = this.jlxdata.find((item) => {
-                    return item.id == this.infodata.jlxdm
-                  })
-                  this.form.jlxstate = finditem != null ? finditem.label : this.infodata.jlxdm
-                })
-                .catch(err => {
-                  alert(err)
-                })
+                   finditem = this.jlxdata.find((item) => {return item.id == this.infodata.jlxdm})
+                  this.form.jlxstate = finditem != null ? finditem.label : this.infodata.jlxdm})
+                .catch(err => {alert(err)})
           }
         }
+         if (this.getchecktype == 'update'){
+
+         }
 
         }
     },
     'form.sspcsstate': {
-      handler() {
-        if (this.getchecktype == 'add') {
-
-        } else {
+     async handler() {
+        if (this.getchecktype == 'update') {
+          this.jwwgdata = await this.getjjinfoBypId(this.form.sspcsstate)
+          this.sszrqdata = await this.getzrqinfoBypcs(this.form.sspcsstate)
+        }
+        if (this.getchecktype == 'details' | this.getchecktype == 'update' ) {
+          let sspcslist = []
           if (this.infodata != null) {
             this.pId = this.infodata.ssfxj
-            GetTreeInfo(this.Treeparameter)
+            sspcslist = await GetTreeInfo(this.Treeparameter)
                 .then(res => {
-                  let finditem = res.data.find((item) => {
-                    return item.id == this.infodata.sspcs
-                  })
-                  this.form.sspcsstate = finditem != null ? finditem.label : this.infodata.sspcs
-                })
-                .catch(err => {
-                  alert(err)
-                })
+                  return res.data})
+                .catch(err => {alert(err)})
+            let finditem = sspcslist.find((item) => {return item.id == this.infodata.sspcs})
+            if(this.getchecktype == 'details')
+            {
+              this.form.sspcsstate = finditem != null ? finditem.label : this.infodata.sspcs
+            }
+            if (this.getchecktype == 'update' && this.updatecontent == 0){
+              console.log(finditem,'kk')
+              this.form.sspcsstate = finditem != null ? finditem.id : this.infodata.sspcs
+            }
           }
+          this.updatecontent++
         }
       }
     },
@@ -547,22 +562,18 @@ export default {
       handler() {
         if (this.getchecktype == 'add') {
 
-        } else {
+        }
+        if (this.getchecktype == 'details') {
           if (this.infodata != null) {
             this.pId = this.infodata.sspcs
             console.log(this.pId, 'wgdm数据重新加载')
             getSqBypcs(this.Treeparameter)
                 .then(res => {
                   console.log(res, 'wgdm')
-                  let finditem = res.data.find((item) => {
-                    return item.id == this.infodata.wgdm
-                  })
-                  console.log(finditem, 'wgdm')
+                  let finditem = res.data.find((item) => {return item.id == this.infodata.wgdm})
                   this.form.wgdmstate = finditem != null ? finditem.label : this.infodata.wgdm
                 })
-                .catch(err => {
-                  alert(err)
-                })
+                .catch(err => {alert(err)})
           }
         }
       }
@@ -571,67 +582,54 @@ export default {
      handler() {
        if (this.getchecktype == 'add') {
 
-       } else {
+       }
+       if (this.getchecktype == 'details') {
          if (this.infodata != null) {
            this.pId = this.infodata.sspcs
            this.max = 'W4'
            GetTreeInfo(this.Treeparameter)
                .then(res => {
-                 let finditem = res.data.find((item) => {
-                   return item.id == this.infodata.sssj
-                 })
+                 let finditem = res.data.find((item) => {return item.id == this.infodata.sssj})
                  this.form.sszrqstate = finditem != null ? finditem.label : this.infodata.sszrq
                })
-               .catch(err => {
-                 alert(err)
-               })
+               .catch(err => {alert(err)})
          }
        }
      }
    },
      'form.sssjstate': {
-       handler() {
-         if (this.getchecktype == 'add'){
-
+       async  handler() {
+         if (this.getchecktype == 'update'){
+          this.ssfxjdata = await this.getjjinfoBypId(this.form.sssjstate)
          }
-         else
+         if (this.getchecktype == 'details')
          {
            if (this.infodata != null) {
            this.pId = ''
            GetTreeInfo(this.Treeparameter)
                .then(res => {
-                 let finditem = res.data.find((item) => {
-                   return item.id == this.infodata.sssj
-                 })
+                 let finditem = res.data.find((item) => {return item.id == this.infodata.sssj})
                  this.form.sssjstate = finditem != null ? finditem.label : this.infodata.sssj
                })
-               .catch(err => {
-                 alert(err)
-               })
-         }
-       }
-         }
+               .catch(err => {alert(err)})
+          }
+          }
+          }
 
      },
      'form.ssfsjstate': {
-       handler() {
-         console.log('cccc')
-         if (this.getchecktype == 'add') {
-
-         } else {
+       async  handler() {
+         if (this.getchecktype == 'update') {
+           this.sspcsdata = await this.getjjinfoBypId(this.form.ssfsjstate)
+         }
+         if (this.getchecktype == 'details') {
            if (this.infodata != null) {
              this.pId = this.infodata.sssj
              GetTreeInfo(this.Treeparameter)
                  .then(res => {
-                   let finditem = res.data.find((item) => {
-                     return item.id == this.infodata.ssfxj
-                   })
-
-                   this.form.ssfsjstate = finditem != null ? finditem.label : this.infodata.ssfxj
-                 })
-                 .catch(err => {
-                   alert(err)
-                 })
+                   let finditem = res.data.find((item) => {return item.id == this.infodata.ssfxj})
+                   this.form.ssfsjstate = finditem != null ? finditem.label : this.infodata.ssfxj})
+                 .catch(err => {alert(err)})
            }
          }
        }
@@ -645,37 +643,69 @@ export default {
             this.form.qdzmcstate = this.qhdzdata.find((item)=>{return item.id == this.form.qhdzstate}).label
             this.form.jlxstate = ''
           }
-
+          if (this.form.qhdzstate == ''){
+              this.form.qdzmcstate = ''
+          }
         }
-
+        if (this.getchecktype == 'update')
+        {
+          if (this.updatecontent == 0){
+            let finditem = this.qhdzdata.find((item) => {return item.id == this.infodata.hjdzXzqhdm})
+           this.form.qhdzstate = finditem.id
+          }
+          this.pId = this.form.qhdzstate
+          this.max = 'fsj'
+          this.GetXQTree()
+          this.GetSqList()
+        }
       }
     }
   },
-
   methods: {
+    selectclear(type){
+      console.log('清除')
+      if (type == 'qhdz')
+      {
+        this.form.qhdzstate = ''
+        this.form.jlxstate = ''
+      }
+      if (type == 'jlx')
+      {
+        this.form.jlxstate = ''
+      }
+    },
    async hanldselected(type){
       switch (type){
         case 'qhdz':
-          this.pId = this.form.qhdzstate
-          this.max = 'fsj'
-          this.form.jlxstate = ''
-          this.form.sqstate = ''
-          this.GetXQTree()
-          this.GetSqList()
+          if (this.form.qhdzstate != '')
+          {
+            this.pId = this.form.qhdzstate
+            this.max = 'fsj'
+            this.form.jlxstate = ''
+            this.form.sqstate = ''
+            this.GetXQTree()
+            this.GetSqList()
+          }
+
           break;
           case 'jlx':
             break;
           case 'sq':
             break;
         case 'sssj':
-         this.ssfxjdata  =  await this.getjjinfoBypId(this.form.sssjstate)
+          if (this.form.sssjstate != ''){
+            this.ssfxjdata  =  await this.getjjinfoBypId(this.form.sssjstate)
+          }
           break
         case 'ssfsj':
-          this.sspcsdata = await this.getjjinfoBypId(this.form.ssfsjstate)
+          if (this.form.ssfsjstate != '') this.sspcsdata = await this.getjjinfoBypId(this.form.ssfsjstate)
+
           break;
           case 'sspcs':
-            this.jwwgdata = await this.getjjinfoBypId(this.form.sspcsstate)
-            this.sszrqdata = await this.getzrqinfoBypcs(this.form.sspcsstate)
+            if (this.form.sspcsstate != ''){
+              this.jwwgdata = await this.getjjinfoBypId(this.form.sspcsstate)
+              this.sszrqdata = await this.getzrqinfoBypcs(this.form.sspcsstate)
+            }
             break;
         case 'wgdm':
           break
@@ -716,6 +746,7 @@ export default {
       this.$refs['form'].validate((vaid)=>{
         if (vaid){
               alert('提交表单')
+          console.log(this.$refs['form'].model)
         }
         else {
           console.log('提交失败!')
@@ -729,6 +760,8 @@ export default {
     handlclose(){
       //右上角的x 关闭
       this.$store.dispatch('Closemydialog')
+        this.$emit("changedetailsitem");  //清空选中数据
+      this.updatecontent = 0
     },
     handleRemove(file) {
      //照片移除

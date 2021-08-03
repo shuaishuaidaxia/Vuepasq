@@ -61,9 +61,9 @@
        >
       <template slot-scope="scope">
         <el-button  type="text" @click="handleClick(scope.row)">详情</el-button>
-        <el-button  type="text">修改</el-button>
+        <el-button  type="text"  @click="handlupdate(scope.row)" >修改</el-button>
         <el-button  type="text" :disabled="scope.row.hyzt == 1 ? true : false">核验</el-button>
-        <el-button  type="text">删除</el-button>
+        <el-button  type="text" @click="handldelete(scope.row)">删除</el-button>
         <el-button  type="text">物业</el-button>
       </template>
     </el-table-column>
@@ -82,6 +82,7 @@
     <TableDialog
         @danlchangestate="danlchangestate"
         :detailsitem="detailsitem"
+        @changedetailsitem="changedetailsitem"
     >
     </TableDialog>
   </div>
@@ -105,7 +106,7 @@ export default {
     return {
       tableData : this.maintabledata,
       multipleSelection: [],
-      detailsitem: {}
+      detailsitem: {},
     }
   },
   watch: {
@@ -117,9 +118,12 @@ export default {
   },
   methods: {
     handleSelectionChange(val){
+      //check选择
+      this.$emit('batchDelete',val)
       console.log(val)
     },
     getRowClass({ rowIndex }){
+      //改变表格第一行背景色
       if (rowIndex == 0) {
         return 'background:RGB(0,178,191);color: white;textAlign:center'
       } else {
@@ -130,8 +134,6 @@ export default {
       //分页页码改变
       this.$emit("handlcurrent",pageIndex);
       //改变页码
-      console.log('页码改变')
-      console.log(pageIndex,'页码')
     },
     handleClick(value){
       //详情按钮
@@ -142,6 +144,21 @@ export default {
     danlchangestate(){
       //改变对话框的可见状态
       this.dialogFormVisible =! this.dialogFormVisible
+    },
+    changedetailsitem(){
+      //新增页面关闭后删除之前请求的小区详情数据 以便刷新
+      this.detailsitem = null
+    },
+    handldelete(value){
+      //删除行数据
+      console.log(value,'删除行数据')
+      this.$emit("handldelete",value);
+    },
+    handlupdate(value){
+      //修改
+      this.$store.dispatch('Openmydialong','update')
+      this.detailsitem = value
+      console.log('修改')
     }
   },
   filters: {

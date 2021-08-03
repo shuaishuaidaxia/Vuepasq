@@ -77,11 +77,7 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use((response) => {
   console.log('响应请求')
   console.log(response.data)
-   return new Promise((resolve,reject)=>
-   {
-     let data = JSON.parse(JSON.stringify(response))
-      resolve(data.data)
-   })
+  return response.data
 }, erroHandler)
 
 const installer = {

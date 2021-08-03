@@ -3,7 +3,7 @@
     <el-form :inline="true" v-model="form">
       <div style="float:left">
         <el-form-item>
-          <el-select v-model="isRelationGrid" clearable placeholder="请选择"  @change="RGselectcd">
+          <el-select v-model="isRelationGrid" clearable placeholder="请选择"  @change="RGselectcd" >
             <el-option
                 v-for="item in curriculums"
                 :key="item.value"
@@ -39,14 +39,14 @@
         </el-form-item>
         <el-form-item>
           <el-input v-model="inputdata" placeholder="请输入小区名字或地址" ></el-input>
-          <el-button type="primary" @click="SearchBut">搜索</el-button>
+          <el-button type="primary" @click="SearchBut" style="margin-left: 10px">搜索</el-button>
         </el-form-item>
       </div>
 
        <div style="float: right"  >
          <el-form-item>
            <el-button type="primary" @click="addxq">新增</el-button>
-           <el-button type="primary">批量删除</el-button>
+           <el-button type="primary" @click="batchDelete">批量删除</el-button>
          </el-form-item>
        </div>
 
@@ -104,6 +104,11 @@ export default {
     addxq(){
       //点击了新增
       this.$emit("addxq");
+    },
+    batchDelete(){
+      //批量删除
+      console.log('批量')
+      this.$emit("batchDelete");
     }
 
   }

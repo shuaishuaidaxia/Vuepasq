@@ -18,6 +18,7 @@ export default new Vuex.Store({
       state.dilongstate = true
       state.dilongtype = type
       if (type == 'details'){
+        //详情
         state.disabled = true
         state.dialogtitle = '详情'
         state.butqx_isdisabled = true
@@ -26,10 +27,19 @@ export default new Vuex.Store({
       }
       if (type == 'add')
       {
+        //新增
         state.disabled = false
         state.dialogtitle = '新增'
         state.butbc_isdisabled = true
         state.butcz_isdisabled = true
+        state.butqx_isdisabled = true
+      }
+      if (type == 'update')
+      {
+        state.disabled = false
+        state.dialogtitle = '修改'
+        state.butbc_isdisabled = true
+        state.butcz_isdisabled = false
         state.butqx_isdisabled = true
       }
     },

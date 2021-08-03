@@ -8,8 +8,7 @@ const userApi = {
   getzrqBypcs: '/module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity'   // /module/kg/hierarchyTree/getPublicSecurityTreeChildrenListForCommunity?pId=360199401000&max=W4&hyzt=0&level= 通过派出所获得社区
 }
 export function GetTreeInfo (parameter) {
-  return request({
-    url: userApi.getTreeinfo,
+  return request.get(userApi.getTreeinfo,{
     method: 'get',
     params: parameter,
     headers: { 'content-type': 'application/json' },
